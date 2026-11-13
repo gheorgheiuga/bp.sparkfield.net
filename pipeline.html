@@ -1,4 +1,4 @@
-<!doctype html><html lang="en" data-theme="light"><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!doctype html><html lang="en" data-theme="light"><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><link rel="stylesheet" href="auth-gate.css"></head><body><div id="horizon-auth"></div>
 <title>Horizon Initiatives | Blue Projects</title>
 <style>
 :root{
@@ -750,4 +750,4 @@ sync('Saved in this browser');const selected=new URLSearchParams(location.search
 window.addEventListener('storage',e=>{if(e.key===LOCAL_KEY&&!editing()){try{const v=JSON.parse(e.newValue||'null');if(v){S.settings=Object.assign(clone(DEF),v.settings||{});S.projects=(v.projects||[]).map(shape);render()}}catch(err){}}});
 </script>
 
-</body></html>
+<script src="auth-gate.js"></script></body></html>
