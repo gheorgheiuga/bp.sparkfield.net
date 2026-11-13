@@ -1,6 +1,7 @@
 function isOtp(token){try{return JSON.parse(Buffer.from(token.split('.')[1],'base64url').toString('utf8')).amr?.some(x=>x.method==='otp')===true}catch{return false}}
-const ADMIN = 'gheorghe.iuga@blueprojects.com';
-const DOMAIN = /^[^\s@]+@blueprojects\.com$/i;
+// TEMPORARY: preview-only Gmail administrator for delivery testing. Never merge into production.
+const ADMINS = new Set(['gheorghe.iuga@blueprojects.com','gheorghe.iuga@gmail.com']);
+const DOMAIN = /^(?:[^\s@]+@blueprojects\.com|gheorghe\.iuga@gmail\.com)$/i;
 const url = () => (process.env.SUPABASE_URL || '').replace(/\/$/, '');
 const anon = () => process.env.SUPABASE_PUBLISHABLE_KEY || process.env.SUPABASE_ANON_KEY;
 const service = () => process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -20,7 +21,7 @@ async function profile(u){
   const find=await db(`horizon_access?user_id=eq.${encodeURIComponent(u.id)}&select=user_id,email,status,requested_at,reviewed_at,reviewed_by`);
   if(!find.ok)throw Error('Approval store unavailable');
   if(find.data.length){if(find.data[0].email.toLowerCase()!==u.email)throw Error('Account email changed; administrator intervention required');return find.data[0];}
-  const row={user_id:u.id,email:u.email,status:u.email===ADMIN?'approved':'pending'};
+  const row={user_id:u.id,email:u.email,status:ADMINS.has(u.email)?'approved':'pending'};
   const insert=await db('horizon_access',{method:'POST',body:row,headers:{Prefer:'resolution=ignore-duplicates,return=representation'}});
   if(!insert.ok)throw Error('Approval request could not be recorded');
   if(insert.data?.length)return insert.data[0];
@@ -46,7 +47,7 @@ module.exports = async function(req,res){
     }
     if(action==='signout'){res.setHeader('Set-Cookie','horizon_session=; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=0');return respond(res,200,{ok:true})}
     const u=await identity(req);if(!u)return respond(res,401,{error:'Please sign in with your verified work email.'});
-    const mine=await profile(u);const isAdmin=u.email===ADMIN;
+    const mine=await profile(u);const isAdmin=ADMINS.has(u.email);
     if(action==='status')return respond(res,200,{email:u.email,status:mine.status,isAdmin});
     if(!isAdmin || mine.status!=='approved')return respond(res,403,{error:'Administrator access required.'});
     if(action==='list'){

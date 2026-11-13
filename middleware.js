@@ -1,5 +1,6 @@
 import { next } from '@vercel/functions';
-const EMAIL=/^[^\s@]+@blueprojects\.com$/i;
+// TEMPORARY preview-only Gmail test exception.
+const EMAIL=/^(?:[^\s@]+@blueprojects\.com|gheorghe\.iuga@gmail\.com)$/i;
 const OPEN=new Set(['/login.html','/auth-gate.js','/auth-gate.css','/blue-projects-logo.png','/api/access','/favicon.ico']);
 function isOtp(token){try{return JSON.parse(atob(token.split('.')[1].replace(/-/g,'+').replace(/_/g,'/'))).amr?.some(x=>x.method==='otp')===true}catch{return false}}
 function cookie(request){return (request.headers.get('cookie')||'').split(';').map(x=>x.trim()).find(x=>x.startsWith('horizon_session='))?.slice('horizon_session='.length)||''}
