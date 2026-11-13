@@ -12,8 +12,9 @@ export default async function middleware(request){
   try{
     const identity=await fetch(endpoint+'/auth/v1/user',{headers:{apikey:anon,Authorization:'Bearer '+token}});if(!identity.ok)return Response.redirect(new URL('/login.html',request.url),302);
     const u=await identity.json();if(!u.id||!u.email_confirmed_at||!EMAIL.test(u.email||'')||!isOtp(token))return Response.redirect(new URL('/login.html',request.url),302);
-    const response=await fetch(endpoint+'/rest/v1/horizon_access?user_id=eq.'+encodeURIComponent(u.id)+'&select=email,status',{headers:{apikey:service,Authorization:'Bearer '+service},cache:'no-store'});
+    const response=await fetch(endpoint+'/rest/v1/horizon_access?user_id=eq.'+encodeURIComponent(u.id)+'&select=email,status,role',{headers:{apikey:service,Authorization:'Bearer '+service},cache:'no-store'});
     if(!response.ok)return new Response('Access service unavailable.',{status:503});const rows=await response.json();if(rows.length!==1||rows[0].status!=='approved'||rows[0].email.toLowerCase()!==u.email.toLowerCase())return Response.redirect(new URL('/login.html',request.url),302);
+    if(/^\/pipeline(?:\.html)?\/?$/.test(path) && !['admin','dt_lead','managing_partner'].includes(rows[0].role))return new Response('Horizon Initiatives is available to Digital Transformation Leads, Managing Partners and administrators.',{status:403,headers:{'Cache-Control':'no-store'}});
     return next({headers:{'Cache-Control':'private, no-store'}});
   }catch{return new Response('Access service unavailable.',{status:503})}
 }

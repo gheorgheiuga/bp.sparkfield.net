@@ -12,7 +12,7 @@
   function granted(){if(location.pathname==='/login.html'){location.href='/index.html';return}document.documentElement.classList.add('horizon-access-granted');root.innerHTML=`<div class="auth-toolbar"><span>${escape(account.email)} · ${escape(roleLabels[account.role]||account.role)}</span>${account.isAdmin?'<button id="auth-admin">Manage users</button>':''}<button class="secondary" id="auth-signout">Sign out</button></div>`;root.querySelector('#auth-signout').onclick=logout;if(account.isAdmin)root.querySelector('#auth-admin').onclick=admin}
   async function check(){try{account=await api('status');if(account.status==='approved')granted();else waiting(account.status)}catch(err){if(/sign in/i.test(err.message)){login()}else{shell('<p>We could not check access right now. Please try again.</p><button id="auth-retry">Retry</button><button class="secondary" id="auth-signout">Sign out</button>');msg(err);root.querySelector('#auth-retry').onclick=check;root.querySelector('#auth-signout').onclick=logout}}}
   async function admin(){
-    shell('<h2>Manage users</h2><p>Approve access and assign roles. Roles identify responsibilities; the Ideas and Initiatives data is still stored in each browser.</p><div id="requests">Loading…</div><button class="secondary" id="auth-return">Return to Horizon</button>','admin-box');
+    shell('<h2>Manage users</h2><p>Approve access and assign roles. Roles control access to shared Ideas and Initiatives.</p><div id="requests">Loading…</div><button class="secondary" id="auth-return">Return to Horizon</button>','admin-box');
     root.querySelector('#auth-return').onclick=granted;
     try{
       const {requests}=await api('list');const container=root.querySelector('#requests');
