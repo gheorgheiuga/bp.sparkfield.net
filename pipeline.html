@@ -426,7 +426,7 @@ function vDash(){
   const pend=live.filter(p=>{const st=stageOf(p);return st==='Idea'&&!p.gates.g0.decision||st==='Business case'&&!p.gates.g1.decision||st==='Pilot'&&!p.gates.g2.decision});
   app.innerHTML=`
   <div class="kicker">Portfolio dashboard</div><h1 class="ptitle">AI &amp; digitalisation pipeline</h1>
-  <p class="sub">One shared pipeline for the whole company. Every idea and business case entered by anyone appears here live. Stage-gate: Idea → Gate 0 → Business case → Gate 1 → Pilot → Gate 2 → Scale.</p>
+  <p class="sub">A local portfolio prototype for exploring ideas and business cases. Records are saved only in this browser. Stage-gate: Idea → Gate 0 → Business case → Gate 1 → Pilot → Gate 2 → Scale.</p>
   ${NOTICE()}${filterBar()}
   <div class="grid g6" style="margin-bottom:16px">${tiles.map(t=>`<div class="tile"><div class="l">${t[0]}</div><div class="v">${t[1]}</div><div class="n">${t[2]}</div></div>`).join('')}</div>
   <div class="grid g2" style="margin-bottom:16px">
@@ -473,7 +473,7 @@ function sortBar(){const so=UI.sort;
   return `<div class="sortbar"><label for="regSort">Sort by</label><select id="regSort" data-sortsel="1">${SORTS.map(x=>`<option value="${x[0]}" ${x[0]===so.key?'selected':''}>${x[1]}</option>`).join('')}</select>
   <button type="button" class="btn sec sm" data-act="sortDir" aria-label="Reverse sort order">${so.dir==='asc'?'↑ Ascending':'↓ Descending'}</button></div>`}
 function regTable(ps){
-  if(!ps.length)return `<div class="empty">No projects yet${CAN_WRITE?' — click “+ New idea” to add the first one.':'.'}</div>`;
+  if(!ps.length)return `<div class="empty">No projects yet${CAN_WRITE?' — click “+ New initiative” to add the first one.':'.'}</div>`;
   const so=UI.sort,def=SORTS.find(x=>x[0]===so.key)||SORTS[0],m=so.dir==='asc'?1:-1;
   const rows=ps.map(p=>({p,c:calc(p),pr:priority(p)}));
   rows.sort((a,b)=>{const x=def[2](a),y=def[2](b);
