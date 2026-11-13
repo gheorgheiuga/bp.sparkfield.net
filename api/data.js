@@ -34,7 +34,7 @@ module.exports=async(req,res)=>{
   const {action,kind,id,record,revision}=req.body||{};const lead=me.role!=='user';const settingsAdmin=['admin','managing_partner'].includes(me.role);
   if(action==='list'){
    if(!table[kind]||(kind!=='ideas'&&!lead))return result(res,403,{error:'Access denied'});
-   let rows=[],offset=0;for(;;){const r=await request('/rest/v1/'+table[kind]+'?select=id,record,revision&order=id.asc&limit=500&offset='+offset);if(!r.ok)throw Error('Read failed');rows.push(...r.data);if(r.data.length<500)break;offset+=500;}if(kind==='ideas')rows=rows.map(row=>{const {likedBy=[],...rest}=row.record;return {...row,record:{...rest,liked:likedBy.includes(me.id)}}});return result(res,200,{rows});
+   let rows=[],offset=0;for(;;){const r=await request('/rest/v1/'+table[kind]+'?select=id,record,revision&order=id.asc&limit=500&offset='+offset);if(!r.ok)throw Error('Read failed');rows.push(...r.data);if(r.data.length<500)break;offset+=500;}if(kind==='ideas')rows=rows.filter(row=>!row.record.withdrawn||row.record.authorId===me.id).map(row=>{const {likedBy=[],...rest}=row.record;return {...row,record:{...rest,isOwn:row.record.authorId===me.id,liked:likedBy.includes(me.id)}}});return result(res,200,{rows});
   }
   if(action==='create_idea'){
    const fields=['title','problem','solution','dimension','theme'];if(!record||fields.some(k=>typeof record[k]!=='string'||record[k].length>1000)||!record.title.trim()||!record.problem.trim())return result(res,400,{error:'Invalid idea'});
@@ -46,11 +46,17 @@ module.exports=async(req,res)=>{
    if(!row && requestId){row=await getRow('ideas',newId);if(row && (row.record.authorId!==me.id||row.record.submissionHash!==fingerprint))return result(res,409,{error:'This submission ID was already used. Please start a new idea.'});}
    if(!row)throw Error('Create failed');return result(res,200,{row});
   }
-  if(['comment','like','review'].includes(action)){
+  if(['comment','like','review','withdraw','restore'].includes(action)){
    if(!ID.test(String(id||''))||!Number.isSafeInteger(revision)||revision<1)return result(res,400,{error:'Invalid idea'});
    if(action==='review'&&!lead)return result(res,403,{error:'Review access required'});
    const row=await getRow('ideas',id);if(!row)return result(res,404,{error:'Idea not found'});if(row.revision!==revision)return result(res,409,{error:'This idea changed. Reload it before saving.'});
    let x=row.record;const date=new Date().toISOString();
+   if(action==='withdraw'||action==='restore'){
+    if(x.authorId!==me.id)return result(res,403,{error:'Only the author can withdraw or restore this idea.'});
+    if(action==='withdraw'&&(x.initiativeId||x.status==='Promoted'||x.status==='In Business Case'))return result(res,409,{error:'This idea has already been promoted. Please contact a lead.'});
+    if((action==='withdraw')===!!x.withdrawn)return result(res,409,{error:'This idea is already in that state.'});
+    x.withdrawn=action==='withdraw';x.history=[...(x.history||[]),{date,text:me.email+(x.withdrawn?' withdrew':' restored')+' the idea.'}];
+   }else if(x.withdrawn)return result(res,409,{error:'This idea has been withdrawn.'});
    if(action==='comment'){const text=String(req.body.text||'').trim();if(!text||text.length>1000)return result(res,400,{error:'Invalid contribution'});x.comments=[...(x.comments||[]),{author:me.email,text}];x.history=[...(x.history||[]),{date,text:me.email+' added a contribution.'}];}
    if(action==='like'){const set=new Set(x.likedBy||[]);set.has(me.id)?set.delete(me.id):set.add(me.id);x.likedBy=[...set];x.likes=set.size;}
    if(action==='review'){const review=req.body.review||{};if(!['New','In Discussion','Under Review','Promoted','Closed'].includes(review.status)||!String(review.feedback||'').trim()||(review.status==='Promoted'&&!String(review.handoff||'').trim())||x.initiativeId)return result(res,400,{error:'Invalid review'});for(const k of ['status','dimension','feedback','handoff','merge']){if(typeof review[k]!=='string'||review[k].length>1000)return result(res,400,{error:'Invalid review'});x[k]=review[k].trim()}x.history=[...(x.history||[]),{date,text:me.email+' reviewed the idea: '+x.status+'. '+x.feedback}];}
@@ -59,6 +65,7 @@ module.exports=async(req,res)=>{
   if(action==='pickup'){
    if(!lead)return result(res,403,{error:'Initiative access required'});
    const owner=String(req.body.owner||'').trim(),note=String(req.body.note||'').trim();if(!ID.test(String(id||''))||!Number.isSafeInteger(revision)||revision<1||!owner||owner.length>100||!note||note.length>1000)return result(res,400,{error:'Invalid handoff'});
+   const existing=await getRow('ideas',id);if(!existing||existing.record.withdrawn)return result(res,409,{error:'This idea is unavailable or has been withdrawn.'});
    const r=await request('/rest/v1/rpc/horizon_pickup',{method:'POST',body:{p_idea_id:id,p_revision:revision,p_project_id:'HZ-'+crypto.randomUUID(),p_actor:me.email,p_owner:owner,p_note:note}});
    if(!r.ok)throw Error('Handoff failed');if(!r.data)return result(res,409,{error:'The idea changed or was already picked up.'});return result(res,200,{handoff:r.data});
   }
