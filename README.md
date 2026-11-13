@@ -25,3 +25,9 @@ Open `pipeline.html` through the Ideas navigation. In an idea's detail, **Pick u
 The site is protected by Supabase email one-time codes and administrator approval. During testing, `gheorghe.iuga@gmail.com` is temporarily enabled as an administrator alongside `gheorghe.iuga@blueprojects.com`; remove the Gmail exception after Blue Projects email delivery works. New Blue Projects users are pending until an administrator approves them. The Gmail exception is limited to that exact account. The signup hook permits new Blue Projects accounts only; the existing Gmail test account was created during an authorized temporary exception.
 
 Access control does not make the Ideas and Initiatives data shared: those records still stay in each browser's local storage. Authentication rules are enforced by routing middleware and by the access service; the public source code is not confidential. Configure Supabase SMTP and the email OTP templates, and apply `supabase/setup.sql` before deploying. Passwordless email delivery and approval should be tested before inviting users.
+
+### User roles
+
+Approved users have one of four roles: Admin, User, Digital Transformation Lead, or Managing Partner. Administrators manage access and assign roles through Manage users; the access API checks administrator status against the database on every request. The designated company administrator remains protected from demotion or rejection, and administrators cannot change their own role. New company accounts require approval. The Gmail account is a temporary sign-in exception and can be assigned a standard role.
+
+Roles other than Admin currently describe responsibility; Ideas and Initiatives remain local browser prototypes and do not yet enforce role-specific permissions or provide shared data. Production collaboration requires a shared backend and server-side authorization for every action.

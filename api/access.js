@@ -1,6 +1,6 @@
 function isOtp(token){try{return JSON.parse(Buffer.from(token.split('.')[1],'base64url').toString('utf8')).amr?.some(x=>x.method==='otp')===true}catch{return false}}
-// TEMPORARY: the designated Gmail account is an administrator during testing. Remove when company email delivery is working.
-const ADMINS = new Set(['gheorghe.iuga@blueprojects.com','gheorghe.iuga@gmail.com']);
+const PRIMARY_ADMIN = 'gheorghe.iuga@blueprojects.com';
+const ROLES = ['admin','user','dt_lead','managing_partner'];
 const DOMAIN = /^(?:[^\s@]+@blueprojects\.com|gheorghe\.iuga@gmail\.com)$/i;
 const url = () => (process.env.SUPABASE_URL || '').replace(/\/$/, '');
 const anon = () => process.env.SUPABASE_PUBLISHABLE_KEY || process.env.SUPABASE_ANON_KEY;
@@ -18,14 +18,14 @@ async function identity(req){
 }
 async function db(path,opts={}){return supa('/rest/v1/'+path,{...opts,key:service(),token:service()})}
 async function profile(u){
-  const find=await db(`horizon_access?user_id=eq.${encodeURIComponent(u.id)}&select=user_id,email,status,requested_at,reviewed_at,reviewed_by`);
+  const find=await db(`horizon_access?user_id=eq.${encodeURIComponent(u.id)}&select=user_id,email,status,role,requested_at,reviewed_at,reviewed_by`);
   if(!find.ok)throw Error('Approval store unavailable');
   if(find.data.length){if(find.data[0].email.toLowerCase()!==u.email)throw Error('Account email changed; administrator intervention required');return find.data[0];}
-  const row={user_id:u.id,email:u.email,status:ADMINS.has(u.email)?'approved':'pending'};
+  const row={user_id:u.id,email:u.email,status:u.email===PRIMARY_ADMIN?'approved':'pending',role:u.email===PRIMARY_ADMIN?'admin':'user'};
   const insert=await db('horizon_access',{method:'POST',body:row,headers:{Prefer:'resolution=ignore-duplicates,return=representation'}});
   if(!insert.ok)throw Error('Approval request could not be recorded');
   if(insert.data?.length)return insert.data[0];
-  const retry=await db(`horizon_access?user_id=eq.${encodeURIComponent(u.id)}&select=user_id,email,status,requested_at,reviewed_at,reviewed_by`);
+  const retry=await db(`horizon_access?user_id=eq.${encodeURIComponent(u.id)}&select=user_id,email,status,role,requested_at,reviewed_at,reviewed_by`);
   if(!retry.ok||!retry.data?.length)throw Error('Approval request unavailable');return retry.data[0];
 }
 module.exports = async function(req,res){
@@ -47,18 +47,31 @@ module.exports = async function(req,res){
     }
     if(action==='signout'){const entry=(req.headers.cookie||'').split(';').map(x=>x.trim()).find(x=>x.startsWith('horizon_session='));const token=entry?.slice('horizon_session='.length);if(token){try{await supa('/auth/v1/logout',{method:'POST',token})}catch(e){console.error('Session revocation failed')} }res.setHeader('Set-Cookie','horizon_session=; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=0');return respond(res,200,{ok:true})}
     const u=await identity(req);if(!u)return respond(res,401,{error:'Please sign in with your verified work email.'});
-    const mine=await profile(u);const isAdmin=ADMINS.has(u.email);
-    if(action==='status')return respond(res,200,{email:u.email,status:mine.status,isAdmin});
+    const mine=await profile(u);const isAdmin=mine.role==='admin' && mine.status==='approved';
+    if(action==='status')return respond(res,200,{email:u.email,status:mine.status,role:mine.role,isAdmin});
     if(!isAdmin || mine.status!=='approved')return respond(res,403,{error:'Administrator access required.'});
     if(action==='list'){
-      const r=await db('horizon_access?select=user_id,email,status,requested_at,reviewed_at,reviewed_by&order=requested_at.desc');
+      const r=await db('horizon_access?select=user_id,email,status,role,requested_at,reviewed_at,reviewed_by&order=requested_at.desc');
       if(!r.ok)throw Error('Unable to load requests');return respond(res,200,{requests:r.data});
     }
     if(action==='review'){
       const id=String(body.userId||''),status=body.status;if(!/^[a-f0-9-]{36}$/i.test(id)||!['approved','rejected'].includes(status))return respond(res,400,{error:'Invalid request.'});
       if(id===u.id)return respond(res,400,{error:'The administrator account cannot review itself.'});
+      const target=await db(`horizon_access?user_id=eq.${encodeURIComponent(id)}&select=email`);
+      if(!target.ok||!target.data?.length)throw Error('Account not found');
+      if(target.data[0].email.toLowerCase()===PRIMARY_ADMIN)return respond(res,400,{error:'The primary administrator must remain approved.'});
       const r=await db(`horizon_access?user_id=eq.${encodeURIComponent(id)}`,{method:'PATCH',body:{status,reviewed_at:new Date().toISOString(),reviewed_by:u.email},headers:{Prefer:'return=representation'}});
       if(!r.ok||!r.data?.length)throw Error('Unable to update request');return respond(res,200,{request:r.data[0]});
+    }
+    if(action==='set_role'){
+      const id=String(body.userId||''),role=body.role;
+      if(!/^[a-f0-9-]{36}$/i.test(id)||!ROLES.includes(role))return respond(res,400,{error:'Invalid role.'});
+      if(id===u.id)return respond(res,400,{error:'Administrators cannot change their own role.'});
+      const target=await db(`horizon_access?user_id=eq.${encodeURIComponent(id)}&select=email`);
+      if(!target.ok||!target.data?.length)throw Error('Account not found');
+      if(target.data[0].email.toLowerCase()===PRIMARY_ADMIN && role!=='admin')return respond(res,400,{error:'The primary administrator must remain an administrator.'});
+      const r=await db(`horizon_access?user_id=eq.${encodeURIComponent(id)}`,{method:'PATCH',body:{role},headers:{Prefer:'return=representation'}});
+      if(!r.ok||!r.data?.length)throw Error('Unable to update role');return respond(res,200,{request:r.data[0]});
     }
     return respond(res,400,{error:'Unknown action.'});
   }catch(e){console.error('Access request failed:',e.message);return respond(res,503,{error:'Access service unavailable. Please contact the administrator.'})}
