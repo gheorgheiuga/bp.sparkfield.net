@@ -1,0 +1,23 @@
+{
+  "name": "primary",
+  "version": "1.0.0",
+  "description": "A local, interactive first exploration of the Ideas pillar. Open `index.html` in a modern browser or serve this folder with any static server. No install or build is required.",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gheorgheiuga/bp.sparkfield.net.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/gheorgheiuga/bp.sparkfield.net/issues"
+  },
+  "homepage": "https://github.com/gheorgheiuga/bp.sparkfield.net#readme",
+  "dependencies": {
+    "@vercel/analytics": "^2.0.1"
+  }
+}
