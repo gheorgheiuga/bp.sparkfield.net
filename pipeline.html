@@ -624,16 +624,18 @@ function vSet(){const s=S.settings;
 
 /* ============================ SHARED STORAGE ============================ */
 const dirty=new Set(),inflight=new Set(),pendingCreate=new Set();let serverIds=new Set(),errShown=false,unsavedProject=false,settingsVersion=0,savedSettingsVersion=0;let flushT=null,flushing=false,setT=null,pendingRR=false;window.addEventListener('beforeunload',e=>{if(unsavedProject||settingsVersion!==savedSettingsVersion){e.preventDefault();e.returnValue='';}});
-function sync(txt,ok=true){document.getElementById('syncTxt').textContent=txt;document.getElementById('sync').classList.toggle('off',!ok)}
+function sync(txt,ok=true){document.getElementById('syncTxt').textContent=txt;document.getElementById('sync').classList.toggle('off',!ok);if(ok)document.getElementById('sync-retry')?.remove()}
+function offerRetry(fn){let b=document.getElementById('sync-retry');if(!b){b=document.createElement('button');b.id='sync-retry';b.type='button';b.textContent='Retry';document.getElementById('sync').appendChild(b)}b.onclick=()=>{b.disabled=true;b.textContent='Please wait…';b.remove();fn()}} 
 function touch(p){p.updatedAt=new Date().toISOString();p.updatedBy=ME;unsavedProject=true;dirty.add(p.id);sync('Saving…');clearTimeout(flushT);flushT=setTimeout(flush,700)}
 async function flush(){if(flushing){clearTimeout(flushT);flushT=setTimeout(flush,300);return}flushing=true;
-  let failed=false;const ids=[...dirty];dirty.clear();
-  for(const id of ids){const p=P(id);if(!p)continue;inflight.add(id);
-    try{await db.doc('projects/'+id).set(clone(p))}
-    catch(e){failed=true;sync('Not saved — see message',false);toast(e.message||'Save failed. Keep this page open and reload only after resolving the conflict.');if(e.status!==409)dirty.add(id)}
-    
-    finally{inflight.delete(id)}}
-  flushing=false;if(dirty.size){flushT=setTimeout(flush,2500)}else if(!failed){unsavedProject=false;errShown=false;sync('All changes saved')}}
+ let failed=false,conflict=false;const ids=[...dirty];dirty.clear();
+ for(const id of ids){const p=P(id);if(!p)continue;inflight.add(id);const sent=clone(p);
+  try{await db.doc('projects/'+id).set(sent)}catch(e){let recovered=false;
+   if(e.status===409){try{const remote=await db.doc('projects/'+id).get();if(remote.exists&&stable(remote.data())===stable(sent)){revisions.projects[id]=remote.revision;recovered=true}}catch{}}
+   if(!recovered){failed=true;if(e.status===409){conflict=true;sync('Changes conflict with a newer version',false);toast('This initiative changed elsewhere. Copy your edits, then reload to review the latest version.')}else{dirty.add(id);sync('Save not confirmed',false);toast('Save not confirmed. Retry or keep this page open.');offerRetry(flush)}}
+  }finally{inflight.delete(id)}}
+ flushing=false;if(dirty.size&&!conflict){flushT=setTimeout(flush,2500)}else if(!failed){unsavedProject=false;errShown=false;sync('All changes saved')}
+}
 async function writeErr(e,retry){const c=e&&e.code;
   if(c==='invalid_argument'){CAN_WRITE=false;toast('Your changes could not be saved: you have view-only access.');render()}
   else if(c==='quota_exceeded'){toast('The pipeline is full. Delete old projects to add new ones.')}
@@ -663,16 +665,28 @@ function onSettings(snap){if(!snap.exists)return;const d=snap.data();
   const nextS=Object.assign(clone(DEF),d);if(stable(nextS)===stable(S.settings))return;
   if(setT)return;S.settings=nextS;if(READY){if(editing())pendingRR=true;else render()}}
 function dbErr(e){sync('Offline — reload to reconnect',false);if(e&&e.code==='revoked'){CAN_WRITE=false;render()}}
-async function saveSettings(){settingsVersion++;sync('Saving settings…');clearTimeout(setT);setT=setTimeout(async()=>{const v=settingsVersion;try{await db.doc('config/settings').set(clone(S.settings));savedSettingsVersion=v;if(v===settingsVersion)sync('Settings saved')}catch(e){sync('Settings not saved',false);toast(e.message)}},700)}
-async function newIdea(){
-  if(!CAN_WRITE){toast(NO_DB?'Shared storage isn’t connected in this view.':'You have view-only access.');return}
-  let n=Math.max(0,...S.projects.map(p=>parseInt((p.id.match(/(\d+)$/)||[])[1]||0)))+1;
-  try{for(let i=0;i<5;i++){const sn=await db.doc('projects/HZ-'+pad(n)).get();if(sn.exists&&sn.data()?.idea)n++;else break}}catch(e){}
-  const id='HZ-'+pad(n);
-  const p=shape({id,sample:false,created:today(),createdBy:ME});
-  S.projects.push(p);pendingCreate.add(id);touch(p);
-  go('wf',id,0);setTimeout(()=>document.getElementById('f_idea_title')?.focus(),50)}
-async function delDocs(ids){for(const id of ids){try{await db.doc('projects/'+id).delete()}catch(e){await writeErr(e);return false}}
+let settingsSaving=false,settingsConflict=false;
+async function flushSettings(){if(settingsSaving||settingsConflict)return;settingsSaving=true;const v=settingsVersion,sent=clone(S.settings);sync('Saving settings…');
+ try{try{await db.doc('config/settings').set(sent)}catch(e){let recovered=false;if(e.status===409){try{const remote=await db.doc('config/settings').get();if(remote.exists&&stable(remote.data())===stable(sent)){revisions.settings.main=remote.revision;recovered=true}}catch{}}if(!recovered){if(e.status===409){settingsConflict=true;sync('Settings conflict with a newer version',false);toast('Settings changed elsewhere. Copy your edits, then reload to review them.')}else{sync('Settings not confirmed',false);toast('Settings not confirmed. Please retry.');offerRetry(flushSettings)}return}}
+ savedSettingsVersion=v;if(v===settingsVersion)sync('Settings saved');else setT=setTimeout(flushSettings,100);
+ }finally{settingsSaving=false}}
+async function saveSettings(){settingsVersion++;sync('Saving settings…');clearTimeout(setT);setT=setTimeout(flushSettings,700)}
+
+let creatingInitiative=false,pendingInitiative=null;
+async function newIdea(button){
+ if(!CAN_WRITE){toast(NO_DB?'Shared storage isn’t connected in this view.':'You have view-only access.');return}
+ if(creatingInitiative)return;creatingInitiative=true;const controls=[...document.querySelectorAll('[data-act="newIdea"]')],original=new Map(controls.map(c=>[c,c.textContent]));controls.forEach(c=>{c.disabled=true;c.textContent='Please wait…'});sync('Creating initiative…');
+ if(!pendingInitiative){const id='HZ-'+crypto.randomUUID();pendingInitiative=shape({id,sample:false,created:today(),createdBy:ME})}
+ const p=pendingInitiative;
+ try{
+  try{await db.doc('projects/'+p.id).set(clone(p))}catch(e){
+   if(e.status!==409)throw e;const existing=await db.doc('projects/'+p.id).get();if(!existing.exists||stable(existing.data())!==stable(p))throw e;revisions.projects[p.id]=existing.revision;
+  }
+  if(!P(p.id))S.projects.push(p);pendingInitiative=null;controls.forEach(c=>delete c.dataset.retryNew);sync('Initiative saved');go('wf',p.id,0);toast('Initiative created');setTimeout(()=>document.getElementById('f_idea_title')?.focus(),50);
+ }catch(e){sync('Initiative not confirmed',false);toast('Could not confirm the save. Select Retry to try again safely.');controls.forEach(c=>{c.dataset.retryNew='true'})}
+ finally{creatingInitiative=false;controls.forEach(c=>{c.disabled=false;c.textContent=c.dataset.retryNew?'Retry':original.get(c)})}
+}
+async function delDocs(ids){for(const id of ids){try{await db.doc('projects/'+id).delete()}catch(e){sync('Delete not confirmed',false);toast('Could not confirm deletion. Refresh and check before retrying.');return false}}
   S.projects=S.projects.filter(p=>!ids.includes(p.id));return true}
 
 /* ============================ DIALOGS ============================ */
@@ -680,7 +694,7 @@ function ask(title,text,yes='Delete'){return new Promise(res=>{const m=document.
   document.getElementById('mTitle').textContent=title;document.getElementById('mText').textContent=text;document.getElementById('mYes').textContent=yes;m.hidden=false;
   const done=v=>{m.hidden=true;res(v)};document.getElementById('mYes').onclick=()=>done(true);document.getElementById('mNo').onclick=()=>done(false);document.getElementById('mNo').focus()})}
 let toastT;function toast(t){const el=document.getElementById('toast');el.textContent=t;el.hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>el.hidden=true,3500)}
-async function save(name,data){if(!dls)return;try{await dls.save({filename:name,data});}catch(e){if(e&&e.code!=='declined')toast('Download failed: '+(e.message||e.code))}}
+async function save(name,data){if(!dls){toast('Downloads are unavailable.');return false}try{await dls.save({filename:name,data});return true}catch(e){if(e&&e.code!=='declined')toast('Download failed: '+(e.message||e.code));return false}}
 
 /* ============================ EVENTS ============================ */
 const dd=document.getElementById('dd');
@@ -697,19 +711,20 @@ document.addEventListener('click',async e=>{
   if(t.dataset.score&&CAN_WRITE){setPath(p,t.dataset.score,+t.dataset.v);touch(p);t.parentNode.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b===t));refreshSide();return}
   if(t.dataset.dec&&CAN_WRITE){const g=p.gates[t.dataset.dec];g.decision=g.decision===t.dataset.v?'':t.dataset.v;if(g.decision&&!g.date)g.date=today();touch(p);render();return}
   const a=t.dataset.act;if(!a)return;dd.hidden=true;
-  if(a==='newIdea'){newIdea();return}
+  if(a==='newIdea'){newIdea(t);return}
   if(a==='sortDir'){setSort(UI.sort.key,UI.sort.dir==='asc'?'desc':'asc');return}
   if(a==='addrow'){getPath(p,t.dataset.arr).push(NEWROW[t.dataset.arr]());touch(p);rerenderBody();return}
   if(a==='delrow'){getPath(p,t.dataset.arr).splice(+t.dataset.i,1);touch(p);rerenderBody();return}
   if(a==='delProject'&&p.sourceIdeaId){toast('Linked initiatives cannot be deleted in this prototype; retain the source history.');return}
-  if(a==='delProject'){if(await ask('Delete '+p.id+'?',`“${p.idea.title||'Untitled'}” will be removed from the shared portfolio. This can't be undone.`)){if(await delDocs([p.id])){toast('Deleted '+p.id);go('dash')}}return}
-  if(a==='exportJson'){save('horizon-pipeline-'+today()+'.json',JSON.stringify({settings:S.settings,projects:S.projects},null,2));return}
-  if(a==='exportCsv'){exportCsv();return}
+  if(a==='delProject'){if(t.disabled)return;t.disabled=true;const original=t.textContent;try{if(await ask('Delete '+p.id+'?',`“${p.idea.title||'Untitled'}” will be removed from the shared portfolio. This can't be undone.`)){t.textContent='Please wait…';if(await delDocs([p.id])){toast('Deleted '+p.id);go('dash')}else{t.textContent='Retry';return}}}finally{t.disabled=false;if(t.textContent==='Please wait…')t.textContent=original}return}
+  if(a==='exportJson'||a==='exportCsv'){if(t.disabled)return;t.disabled=true;const dataButton=document.getElementById('dataBtn'),label=dataButton.textContent;dataButton.disabled=true;dataButton.textContent='Please wait…';try{const ok=a==='exportJson'?await save('horizon-pipeline-'+today()+'.json',JSON.stringify({settings:S.settings,projects:S.projects},null,2)):await exportCsv();if(ok)toast('Download started.')}finally{t.disabled=false;dataButton.disabled=false;dataButton.textContent=label}return}
   if(a==='importLocal'){
+    if(t.disabled)return;t.disabled=true;const dataButton=document.getElementById('dataBtn');dataButton.disabled=true;dataButton.textContent='Please wait…';try{
     let ideas=[],projects=[];try{ideas=JSON.parse(localStorage.getItem('bp-horizon-ideas-v1')||'[]');const local=JSON.parse(localStorage.getItem('bp-horizon-pipeline-v1')||'{}');projects=local.projects||[];if(!Array.isArray(ideas)||!Array.isArray(projects))throw Error('bad data')}catch(e){toast('The old browser records could not be read.');return}
     if(!ideas.length&&!projects.length){toast('No old records were found in this browser.');return}
     if(!await ask('Import browser records?',ideas.length+' ideas and '+projects.length+' initiatives will be shared with approved users. Existing shared records will not be overwritten. Old browser data remains in place.','Import'))return;
-    try{const r=await dataCall('import_local',{ideas,projects});toast('Imported '+r.imported.ideas+' ideas and '+r.imported.projects+' initiatives. Reloading…');location.reload()}catch(e){toast(e.message)}return;
+    try{const r=await dataCall('import_local',{ideas,projects});toast('Imported '+r.imported.ideas+' ideas and '+r.imported.projects+' initiatives. Reloading…');location.reload()}catch(e){toast('Import could not be confirmed. Refresh and check the records before trying again.')}
+    }finally{t.disabled=false;dataButton.disabled=false;dataButton.textContent='Data ▾'}return;
   }
   if(a==='importJson'){document.getElementById('fileIn').click();return}
   if(a==='clearSamples'){const ids=S.projects.filter(x=>x.sample&&!x.sourceIdeaId).map(x=>x.id);if(!ids.length){toast('There are no sample projects.');return}
@@ -729,17 +744,17 @@ function onField(e){const t=e.target;
   touch(p);updateCalcs();refreshSide()}
 app.addEventListener('input',onField);
 app.addEventListener('focusout',()=>setTimeout(()=>{if(pendingRR&&!editing()){pendingRR=false;render()}},60));
-document.getElementById('fileIn').addEventListener('change',e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();
-  r.onload=async()=>{let d;try{d=JSON.parse(r.result)}catch(err){toast('That file is not a Horizon pipeline backup.');return}
+let importingBackup=false;document.getElementById('fileIn').addEventListener('change',e=>{const f=e.target.files[0];if(!f||importingBackup)return;importingBackup=true;const dataButton=document.getElementById('dataBtn');dataButton.disabled=true;dataButton.textContent='Please wait…';const done=()=>{importingBackup=false;dataButton.disabled=false;dataButton.textContent='Data ▾'};const r=new FileReader();r.onerror=()=>{done();toast('Could not read the backup. Please retry.')};
+  r.onload=async()=>{try{let d;try{d=JSON.parse(r.result)}catch(err){toast('That file is not a Horizon pipeline backup.');return}
     const list=(Array.isArray(d)?d:d.projects||[]).filter(x=>x&&x.id&&x.idea);if(!list.length){toast('No projects found in that file.');return}
     if(!await ask('Import '+list.length+' projects?','Projects with matching IDs will be replaced in the shared portfolio. Others are added.','Import'))return;
     if(list.some(x=>P(x.id)?.sourceIdeaId)){toast('Import stopped: an ID belongs to a linked initiative.');return}
-    for(const x of list){const p=shape(clone(x));p.updatedAt=new Date().toISOString();p.updatedBy=ME;try{await db.doc('projects/'+p.id).set(clone(p))}catch(err){await writeErr(err);return}}
-    try{const latest=await dataCall('list',{kind:'projects'});latest.rows.forEach(r=>revisions.projects[r.id]=r.revision);S.projects=latest.rows.map(r=>shape(r.record));toast('Imported '+list.length+' projects');go('dash')}catch(err){toast('Projects were imported, but the portfolio could not refresh. Reload to view them.')}};r.readAsText(f);e.target.value=''});
+    for(const x of list){const p=shape(clone(x));p.updatedAt=new Date().toISOString();p.updatedBy=ME;try{await db.doc('projects/'+p.id).set(clone(p))}catch(err){sync('Import incomplete',false);toast('Import may be incomplete. Refresh and check the portfolio before retrying.');return}}
+    try{const latest=await dataCall('list',{kind:'projects'});latest.rows.forEach(r=>revisions.projects[r.id]=r.revision);S.projects=latest.rows.map(r=>shape(r.record));toast('Imported '+list.length+' projects');go('dash')}catch(err){toast('Projects were imported, but the portfolio could not refresh. Reload to view them.')}}finally{done()}};try{r.readAsText(f)}catch(err){done();toast('Could not read the selected file. Please try again.')}e.target.value=''});
 function exportCsv(){const h=['ID','Title','Function','Pillar','Owner','Sponsor','Stage','Status','Priority','Value','Feasibility','Fit','Risk','Gate0','Gate1','Gate2','Hours','Investment','RunCostYr','BenefitYr','ROI','PaybackMonths','NPV','RealisedLatest','Verdict','UpdatedAt'];
   const q=v=>{v=String(v??'');return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v};
   const rows=S.projects.map(p=>{const c=calc(p),r=realised(p);return [p.id,p.idea.title,p.idea.function,p.idea.pillar,p.idea.owner,p.idea.sponsor,stageOf(p),statusOf(p),priority(p),p.idea.value,p.idea.feasibility,p.idea.fit,p.idea.risk,p.gates.g0.decision,p.gates.g1.decision,p.gates.g2.decision,c.hours,Math.round(c.invest),Math.round(c.run),Math.round(c.benefit),c.roi===null?'':c.roi.toFixed(3),c.payback??'',Math.round(c.npv),r?r.v:'',verdict(p)[0],p.updatedAt||'']});
-  save('horizon-register-'+today()+'.csv','﻿'+[h,...rows].map(r=>r.map(q).join(',')).join('\n'))}
+  return save('horizon-register-'+today()+'.csv','﻿'+[h,...rows].map(r=>r.map(q).join(',')).join('\n'))}
 const tip=document.getElementById('tip');
 document.addEventListener('mousemove',e=>{const el=e.target.closest&&e.target.closest('[data-tip]');if(!el||!el.dataset.tip){tip.hidden=true;return}
   tip.textContent=el.dataset.tip;tip.hidden=false;const w=tip.offsetWidth,h=tip.offsetHeight;
@@ -747,8 +762,8 @@ document.addEventListener('mousemove',e=>{const el=e.target.closest&&e.target.cl
 
 /* Shared records use revision checks. Existing local data is preserved as a draft. */
 const LOCAL_KEY='bp-horizon-pipeline-v1';const revisions={projects:{},settings:{}};
-async function dataCall(action,body={}){const r=await fetch('/api/data',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action,...body})});let out=await r.json();if(!r.ok){const error=Error(out.error||'Shared storage unavailable');error.status=r.status;throw error}return out}
-db={doc(path){const [collection,key]=path.split('/'),kind=collection==='config'?'settings':'projects',id=kind==='settings'?'main':key;return {async get(){const r=await dataCall('list',{kind});const row=r.rows.find(x=>x.id===id);return {exists:!!row,data:()=>row?.record}},async set(record){const r=await dataCall('save',{kind,id,record,revision:revisions[kind][id]||0});revisions[kind][id]=r.row.revision},async delete(){await dataCall('delete_project',{id,revision:revisions.projects[id]||0});delete revisions.projects[id]}}}};
+async function dataCall(action,body={}){const r=await fetch('/api/data',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action,...body}),signal:AbortSignal.timeout(20000)});let out=await r.json();if(!r.ok){const error=Error(out.error||'Shared storage unavailable');error.status=r.status;throw error}return out}
+db={doc(path){const [collection,key]=path.split('/'),kind=collection==='config'?'settings':'projects',id=kind==='settings'?'main':key;return {async get(){const r=await dataCall('list',{kind});const row=r.rows.find(x=>x.id===id);return {exists:!!row,data:()=>row?.record,revision:row?.revision}},async set(record){const r=await dataCall('save',{kind,id,record,revision:revisions[kind][id]||0});revisions[kind][id]=r.row.revision},async delete(){await dataCall('delete_project',{id,revision:revisions.projects[id]||0});delete revisions.projects[id]}}}};
 dls={async save({filename,data}){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([data],{type:'application/octet-stream'}));a.download=filename;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}};
 (async()=>{try{const auth=await fetch('/api/access',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'status'})});const me=await auth.json();if(!auth.ok||me.status!=='approved'||me.role==='user')throw Error('Access denied');ME=me.email;CAN_WRITE=true;IS_ADMIN=['admin','managing_partner'].includes(me.role);IS_EXPORT_ADMIN=me.role==='admin';
  const [projects,settings]=await Promise.all([dataCall('list',{kind:'projects'}),dataCall('list',{kind:'settings'})]);projects.rows.forEach(r=>revisions.projects[r.id]=r.revision);settings.rows.forEach(r=>revisions.settings[r.id]=r.revision);S.settings=Object.assign(clone(DEF),settings.rows[0]?.record||{});S.projects=projects.rows.map(r=>shape(r.record));READY=true;sync('Shared portfolio');const selected=new URLSearchParams(location.search).get('initiative');if(selected&&P(selected)){UI.view='wf';UI.pid=selected;UI.step=0}render();

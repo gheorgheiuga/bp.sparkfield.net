@@ -7,3 +7,5 @@ dialog{border:1px solid var(--line);border-radius:8px;padding:0;width:min(680px,
 @media(max-width:500px){.stage-grid{grid-template-columns:repeat(2,1fr)}.filters{grid-template-columns:1fr 1fr}.filter-field.search{grid-column:1/-1}.page-top{align-items:flex-start}.prototype-label{width:100%}.summary-band{display:block}.summary-band>div+div{margin-top:12px}.form-row{grid-template-columns:1fr}}
 .nav-link{color:#c7d2e3;text-decoration:none;padding:8px 10px;border-left:3px solid transparent;border-radius:3px;font-size:13.5px}.nav-link:hover{background:#ffffff0f;color:#fff}.status.In.Business.Case{color:#a86b00}.stage-grid{grid-template-columns:repeat(7,minmax(0,1fr))}@media(max-width:1100px){.stage-grid{grid-template-columns:repeat(3,1fr)}}@media(max-width:500px){.stage-grid{grid-template-columns:repeat(2,1fr)}}
 #create-error{color:#a82929;font-size:13px;margin:12px 0 0}#submit-idea:disabled{opacity:.65;cursor:wait}
+
+.create-error{color:#a82929;font-size:13px;margin:12px 0 0}
