@@ -262,7 +262,7 @@ function setPath(o,path,v){const ks=path.split('.');let a=o;for(let i=0;i<ks.len
 
 /* ============================ STATE ============================ */
 let S={settings:clone(DEF),projects:[]};
-let UI={view:'dash',pid:null,step:0,f:{fn:'',stage:'',samples:true}};
+let UI={view:'dash',pid:null,step:0,f:{fn:'',stage:'',samples:false}};
 let db=null,user=null,dls=null,ME=null,CAN_WRITE=false,IS_ADMIN=false,IS_EXPORT_ADMIN=false,READY=false,NO_DB=false;
 const P=id=>S.projects.find(p=>p.id===id);
 function gate(){return {decision:'',date:'',by:'',notes:'',checks:[]}}
@@ -735,7 +735,7 @@ document.getElementById('fileIn').addEventListener('change',e=>{const f=e.target
     if(!await ask('Import '+list.length+' projects?','Projects with matching IDs will be replaced in the shared portfolio. Others are added.','Import'))return;
     if(list.some(x=>P(x.id)?.sourceIdeaId)){toast('Import stopped: an ID belongs to a linked initiative.');return}
     for(const x of list){const p=shape(clone(x));p.updatedAt=new Date().toISOString();p.updatedBy=ME;try{await db.doc('projects/'+p.id).set(clone(p))}catch(err){await writeErr(err);return}}
-    toast('Imported '+list.length+' projects');go('dash')};r.readAsText(f);e.target.value=''});
+    try{const latest=await dataCall('list',{kind:'projects'});latest.rows.forEach(r=>revisions.projects[r.id]=r.revision);S.projects=latest.rows.map(r=>shape(r.record));toast('Imported '+list.length+' projects');go('dash')}catch(err){toast('Projects were imported, but the portfolio could not refresh. Reload to view them.')}};r.readAsText(f);e.target.value=''});
 function exportCsv(){const h=['ID','Title','Function','Pillar','Owner','Sponsor','Stage','Status','Priority','Value','Feasibility','Fit','Risk','Gate0','Gate1','Gate2','Hours','Investment','RunCostYr','BenefitYr','ROI','PaybackMonths','NPV','RealisedLatest','Verdict','UpdatedAt'];
   const q=v=>{v=String(v??'');return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v};
   const rows=S.projects.map(p=>{const c=calc(p),r=realised(p);return [p.id,p.idea.title,p.idea.function,p.idea.pillar,p.idea.owner,p.idea.sponsor,stageOf(p),statusOf(p),priority(p),p.idea.value,p.idea.feasibility,p.idea.fit,p.idea.risk,p.gates.g0.decision,p.gates.g1.decision,p.gates.g2.decision,c.hours,Math.round(c.invest),Math.round(c.run),Math.round(c.benefit),c.roi===null?'':c.roi.toFixed(3),c.payback??'',Math.round(c.npv),r?r.v:'',verdict(p)[0],p.updatedAt||'']});
