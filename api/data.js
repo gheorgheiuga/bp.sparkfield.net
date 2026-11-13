@@ -1,3 +1,4 @@
+const {createHash,randomUUID}=require('node:crypto');
 const ENDPOINT=()=>String(process.env.SUPABASE_URL||'').replace(/\/$/,'');
 const ANON=()=>process.env.SUPABASE_PUBLISHABLE_KEY||process.env.SUPABASE_ANON_KEY;
 const SERVICE=()=>process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -37,8 +38,13 @@ module.exports=async(req,res)=>{
   }
   if(action==='create_idea'){
    const fields=['title','problem','solution','dimension','theme'];if(!record||fields.some(k=>typeof record[k]!=='string'||record[k].length>1000)||!record.title.trim()||!record.problem.trim())return result(res,400,{error:'Invalid idea'});
-   const now=new Date(),newId='IDEA-'+crypto.randomUUID();const idea={id:newId,...Object.fromEntries(fields.map(k=>[k,record[k].trim()])),author:me.email,authorId:me.id,date:now.toISOString().slice(0,10),status:'New',likes:0,likedBy:[],comments:[],history:[{date:now.toISOString(),text:'Idea submitted by '+me.email}],feedback:'Awaiting stream lead review.',illustrative:false};
-   const row=await write('ideas',newId,idea,0);if(!row)throw Error('Create failed');return result(res,200,{row});
+   const requestId=req.body.requestId;if(requestId!==undefined && !/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(requestId))return result(res,400,{error:'Invalid submission ID.'});
+   const values=Object.fromEntries(fields.map(k=>[k,record[k].trim()]));
+   const fingerprint=createHash('sha256').update(JSON.stringify(values)).digest('hex');
+   const now=new Date(),newId='IDEA-'+(requestId||randomUUID());const idea={id:newId,...values,submissionHash:fingerprint,author:me.email,authorId:me.id,date:now.toISOString().slice(0,10),status:'New',likes:0,likedBy:[],comments:[],history:[{date:now.toISOString(),text:'Idea submitted by '+me.email}],feedback:'Awaiting stream lead review.',illustrative:false};
+   let row=await write('ideas',newId,idea,0);
+   if(!row && requestId){row=await getRow('ideas',newId);if(row && (row.record.authorId!==me.id||row.record.submissionHash!==fingerprint))return result(res,409,{error:'This submission ID was already used. Please start a new idea.'});}
+   if(!row)throw Error('Create failed');return result(res,200,{row});
   }
   if(['comment','like','review'].includes(action)){
    if(!ID.test(String(id||''))||!Number.isSafeInteger(revision)||revision<1)return result(res,400,{error:'Invalid idea'});
