@@ -1,0 +1,753 @@
+<!doctype html><html lang="en" data-theme="light"><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Horizon Initiatives | Blue Projects</title>
+<style>
+:root{
+  --brand:#1D2341;--head:#1D2341;--ink:#222838;--teal:#23B5D3;--dteal:#14829B;--grey:#5A6478;--muted:#8A93A6;
+  --card:#EEF2F9;--pale:#E0E7F3;--bg:#F5F7FB;--surface:#FFFFFF;--line:#DDE3EE;--line2:#EDF0F6;
+  --field:#FFFFFF;--fieldline:#CFD6E3;--hover:#F7F9FD;--grid:#E8ECF3;--axis:#C9D1DF;--emptycell:#F1F4F9;--quad:#EEF7F9;
+  --c1:#4C63B6;--c2:#14A3B8;--c3:#D08A2E;--stIdea:#9AA3B2;--stScale:#1D2341;
+  --good:#2E7D4F;--goodbg:#E3F3EA;--warn:#9A6212;--warnbg:#FBF0DC;--bad:#B23A3A;--badbg:#F8E3E3;--neutbg:#EEF0F4;
+  --shadow:0 10px 30px rgba(29,35,65,.18);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;
+  --head:#E8ECF6;--ink:#E1E5EE;--dteal:#3CC3DC;--grey:#A3ACBF;--muted:#7B8499;
+  --card:#1E2438;--pale:#2A3150;--bg:#10131E;--surface:#171B2A;--line:#2A3044;--line2:#232839;
+  --field:#10131E;--fieldline:#39405A;--hover:#1D2233;--grid:#252B3D;--axis:#3A4158;--emptycell:#1C2131;--quad:#15283A;
+  --c1:#7D7EE0;--c2:#14A596;--c3:#C3822A;--stIdea:#6B7489;--stScale:#E0E7F3;
+  --good:#6FCB95;--goodbg:#173A28;--warn:#E4B15E;--warnbg:#3A2C12;--bad:#EE8A8A;--badbg:#3F1D1D;--neutbg:#252B3D;--shadow:0 10px 30px rgba(0,0,0,.5)}}
+:root[data-theme="dark"]{color-scheme:dark;
+  --head:#E8ECF6;--ink:#E1E5EE;--dteal:#3CC3DC;--grey:#A3ACBF;--muted:#7B8499;
+  --card:#1E2438;--pale:#2A3150;--bg:#10131E;--surface:#171B2A;--line:#2A3044;--line2:#232839;
+  --field:#10131E;--fieldline:#39405A;--hover:#1D2233;--grid:#252B3D;--axis:#3A4158;--emptycell:#1C2131;--quad:#15283A;
+  --c1:#7D7EE0;--c2:#14A596;--c3:#C3822A;--stIdea:#6B7489;--stScale:#E0E7F3;
+  --good:#6FCB95;--goodbg:#173A28;--warn:#E4B15E;--warnbg:#3A2C12;--bad:#EE8A8A;--badbg:#3F1D1D;--neutbg:#252B3D;--shadow:0 10px 30px rgba(0,0,0,.5)}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font:14px/1.45 Calibri,"Segoe UI",Carlito,Arial,sans-serif;margin:0}
+h1,h2,h3{font-family:Georgia,"Times New Roman",serif;color:var(--head);margin:0;text-wrap:balance}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
+
+header{background:var(--brand);color:#fff;position:sticky;top:env(safe-area-inset-top,0px);z-index:20}
+.hbar{max-width:1320px;margin:0 auto;padding:10px 20px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:12px;margin-right:auto;min-width:0}
+.brand img{height:34px;width:auto;display:block;border-radius:2px}
+.brand span{color:#E0E7F3;font-family:Georgia,serif;font-size:17px;border-left:1px solid rgba(255,255,255,.25);padding-left:12px}
+#sync{font-size:12px;color:#B8C2D6;display:flex;align-items:center;gap:6px}
+#sync i{width:7px;height:7px;border-radius:50%;background:#5FD08E;display:inline-block}
+#sync.off i{background:#E4B15E}
+nav{display:flex;gap:6px;flex-wrap:wrap}
+nav button{background:transparent;border:1px solid transparent;color:#E0E7F3;padding:7px 12px;border-radius:6px;cursor:pointer}
+nav button:hover{background:rgba(255,255,255,.08)}
+nav button.on{border-color:var(--teal);color:#fff}
+nav button.cta{background:var(--teal);color:#1D2341;font-weight:700}
+.menu{position:relative}
+.menu .dd{position:absolute;right:0;top:40px;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:8px;box-shadow:var(--shadow);min-width:240px;padding:6px}
+.dd button{display:block;width:100%;text-align:left;background:none;border:0;padding:8px 10px;border-radius:5px;cursor:pointer;color:var(--ink)}
+.dd button:hover{background:var(--card)}
+.dd hr{border:0;border-top:1px solid var(--line);margin:4px 0}
+.dd .lbl{font-size:11px;color:var(--muted);padding:6px 10px 2px;text-transform:uppercase;letter-spacing:.08em}
+
+main{max-width:1320px;margin:0 auto;padding-inline:20px;padding-block:22px 60px}
+.kicker{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--dteal);display:flex;align-items:center;gap:8px}
+.kicker:before{content:"";width:10px;height:10px;background:var(--teal)}
+.ptitle{font-size:26px;margin:4px 0}
+.sub{color:var(--grey);margin:0 0 18px;max-width:80ch}
+
+.grid{display:grid;gap:16px}
+.g6{grid-template-columns:repeat(6,minmax(0,1fr))}
+.g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px 18px;min-width:0}
+.card h3{font-size:16px;margin-bottom:2px}
+.cap{color:var(--grey);font-size:12.5px;margin:0 0 10px}
+.tile{background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--teal);border-radius:10px;padding:12px 14px;min-width:0}
+.tile .l{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--grey);font-weight:700}
+.tile .v{font-family:Georgia,serif;font-size:26px;color:var(--head);margin-top:4px;font-variant-numeric:tabular-nums}
+.tile .n{font-size:12px;color:var(--grey)}
+.filters{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:16px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 14px}
+.filters label{font-size:12px;color:var(--grey);display:flex;align-items:center;gap:6px}
+.filters select{background:var(--field);border:1px solid var(--fieldline);border-radius:5px;padding:3px 6px}
+.legend{display:flex;gap:14px;font-size:12px;color:var(--grey);margin-bottom:4px;flex-wrap:wrap}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px}
+svg.chart{width:100%;height:auto;display:block;overflow:visible}
+svg.chart text{font-family:Calibri,"Segoe UI",Arial,sans-serif;font-size:12px;fill:var(--grey)}
+svg.chart text.v{fill:var(--ink);font-size:11.5px}
+svg.chart text.q{fill:var(--muted);font-size:10.5px;letter-spacing:.08em}
+svg.chart text.ink{fill:var(--ink)}
+svg.chart text.onfill{fill:#fff}
+svg.chart .gl{stroke:var(--grid)}
+svg.chart .axis{stroke:var(--axis)}
+.f1{fill:var(--c1)}.f2{fill:var(--c2)}.f3{fill:var(--c3)}.fIdea{fill:var(--stIdea)}.fScale{fill:var(--stScale)}
+.fEmpty{fill:var(--emptycell)}.fQuad{fill:var(--quad)}.fHit{fill:transparent}
+.b1{background:var(--c1)}.b2{background:var(--c2)}.b3{background:var(--c3)}.bIdea{background:var(--stIdea)}.bScale{background:var(--stScale)}
+circle.dot{stroke:var(--surface);stroke-width:2;fill-opacity:.9}
+svg.chart [data-tip]:hover{opacity:.82}
+.empty{color:var(--muted);font-style:italic;padding:18px 0;text-align:center}
+#tip{position:fixed;pointer-events:none;background:#1D2341;color:#fff;padding:7px 10px;border-radius:6px;font-size:12.5px;line-height:1.35;max-width:280px;z-index:50;box-shadow:var(--shadow);white-space:pre-line}
+
+table{width:100%;border-collapse:collapse}
+th{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--grey);text-align:left;font-weight:700;padding:8px;border-bottom:2px solid var(--pale);white-space:nowrap}
+td{padding:7px 8px;border-bottom:1px solid var(--line2);vertical-align:middle}
+td:first-child{white-space:nowrap}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+tr.click{cursor:pointer}
+tr.click:hover td{background:var(--hover)}
+.reghead{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}
+.sortbar{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--grey);margin-bottom:10px}
+.sortbar select{background:var(--field);border:1px solid var(--fieldline);border-radius:6px;padding:5px 8px;font-size:13px}
+th.sortable{cursor:pointer;user-select:none}
+th.sortable:hover{color:var(--head)}
+th.sortable.on{color:var(--dteal)}
+th .arr{margin-left:4px;font-size:9px;opacity:.55}
+th.on .arr{opacity:1}
+.tw{overflow-x:auto}
+.pill{display:inline-block;padding:2px 9px;border-radius:20px;font-size:12px;font-weight:600;white-space:nowrap}
+.st-Idea{background:var(--card);color:var(--grey)}
+.st-Business{background:var(--pale);color:var(--c1)}
+.st-Pilot{background:var(--card);color:var(--dteal);box-shadow:inset 0 0 0 1px var(--c2)}
+.st-Scale{background:var(--head);color:var(--surface)}
+.ok{background:var(--goodbg);color:var(--good)}
+.wa{background:var(--warnbg);color:var(--warn)}
+.ba{background:var(--badbg);color:var(--bad)}
+.ne{background:var(--neutbg);color:var(--grey)}
+.tag{font-size:11px;color:var(--muted);border:1px solid var(--line);padding:0 6px;border-radius:10px;margin-left:6px}
+.pbar{height:8px;background:var(--line2);border-radius:4px;min-width:90px;position:relative;overflow:hidden}
+.pbar i{position:absolute;left:0;top:0;bottom:0;background:var(--c2);border-radius:4px}
+.note{background:var(--card);border-left:4px solid var(--teal);padding:10px 14px;border-radius:6px;color:var(--ink);font-size:13px;margin-bottom:14px}
+.note a{color:var(--dteal)}
+
+.wf{display:grid;grid-template-columns:230px minmax(0,1fr) 290px;gap:18px;align-items:start}
+.steps{position:sticky;top:84px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px}
+.step{display:flex;gap:10px;align-items:flex-start;padding:9px 8px;border-radius:8px;cursor:pointer;position:relative}
+.step:hover,.step.on{background:var(--card)}
+.step.on:before{content:"";position:absolute;left:-10px;top:8px;bottom:8px;width:4px;background:var(--teal);border-radius:0 3px 3px 0}
+.step .dot{flex:none;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font-size:12px;font-weight:700;border:2px solid var(--pale);color:var(--grey);background:var(--surface)}
+.step .dot span{display:inline-block}
+.step.done .dot{background:var(--dteal);border-color:var(--dteal);color:var(--surface)}
+.step.gate .dot{border-radius:5px;transform:rotate(45deg)}
+.step.gate .dot span{transform:rotate(-45deg)}
+.step.lock{opacity:.45;cursor:not-allowed}
+.step b{display:block;color:var(--head);font-size:13.5px}
+.step small{color:var(--grey);font-size:12px}
+.side{position:sticky;top:84px;display:grid;gap:12px}
+.side .card{padding:14px 16px}
+.kv{display:flex;justify-content:space-between;gap:8px;padding:5px 0;border-bottom:1px dashed var(--line);font-size:13px}
+.kv:last-child{border:0}
+.kv span{color:var(--grey)}
+.kv b{font-variant-numeric:tabular-nums;color:var(--head);text-align:right}
+.who{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--grey);margin-top:8px}
+.who img{width:22px;height:22px;border-radius:50%}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:20px 22px;margin-bottom:16px}
+.panel h3{font-size:17px;margin-bottom:4px;display:flex;align-items:center;gap:8px}
+.panel h3:before{content:"";width:4px;height:18px;background:var(--teal);border-radius:2px}
+.form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 16px}
+.form.three{grid-template-columns:repeat(3,minmax(0,1fr))}
+.form .full{grid-column:1/-1}
+.f label{display:block;font-size:12px;font-weight:700;color:var(--grey);margin-bottom:4px}
+.f input,.f select,.f textarea,td input,td select{width:100%;border:1px solid var(--fieldline);border-radius:6px;padding:7px 9px;background:var(--field)}
+.f textarea{min-height:74px;resize:vertical}
+td input,td select{padding:5px 7px;font-size:13px}
+td input[type=number]{text-align:right}
+input:disabled,select:disabled,textarea:disabled{opacity:.8;cursor:not-allowed}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--teal);outline-offset:0;border-color:var(--teal)}
+.score{display:flex;gap:6px}
+.score button{width:34px;height:32px;border-radius:6px;border:1px solid var(--fieldline);background:var(--field);cursor:pointer;font-weight:700;color:var(--grey)}
+.score button.on{background:var(--head);border-color:var(--head);color:var(--surface)}
+.btn{border:1px solid var(--head);background:var(--head);color:var(--surface);padding:8px 14px;border-radius:7px;cursor:pointer;font-weight:600}
+.btn.sec{background:var(--surface);color:var(--head)}
+.btn.sm{padding:5px 10px;font-size:12.5px}
+.btn.ghost{border-color:transparent;background:transparent;color:var(--bad)}
+.btn.danger{background:var(--bad);border-color:var(--bad);color:#fff}
+.x{border:0;background:none;color:var(--muted);cursor:pointer;font-size:16px;padding:2px 6px}
+.x:hover{color:var(--bad)}
+.calc{text-align:right;font-weight:600;color:var(--head);white-space:nowrap;font-variant-numeric:tabular-nums}
+.addrow{margin-top:8px}
+.decision{display:flex;gap:10px;flex-wrap:wrap;margin:6px 0 14px}
+.decision button{flex:1;min-width:110px;padding:14px 10px;border-radius:9px;border:2px solid var(--line);background:var(--surface);cursor:pointer;font-weight:700;font-size:15px;color:var(--grey)}
+.decision button.on.Go,.decision button.on.Scale{border-color:var(--good);background:var(--goodbg);color:var(--good)}
+.decision button.on.Hold,.decision button.on.Iterate{border-color:var(--warn);background:var(--warnbg);color:var(--warn)}
+.decision button.on.Stop{border-color:var(--bad);background:var(--badbg);color:var(--bad)}
+.chk{display:flex;gap:10px;align-items:center;padding:8px 10px;border:1px solid var(--line);border-radius:7px;margin-bottom:6px;background:var(--hover)}
+.chk input{width:17px;height:17px;accent-color:var(--dteal)}
+.chk em{margin-left:auto;font-style:normal;font-size:12px}
+.lockmsg{text-align:center;padding:50px 20px;color:var(--grey)}
+.lockmsg h3{justify-content:center;font-size:22px;margin-bottom:6px}
+.lockmsg h3:before{display:none}
+.wfhead{display:flex;align-items:flex-end;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+.wfhead .grow{flex:1;min-width:240px}
+.navbtns{display:flex;justify-content:space-between;margin-top:6px}
+.loading{padding:80px 0;text-align:center;color:var(--grey)}
+.ro .addrow,.ro .x,.ro .rw{display:none!important}
+.ro .score button,.ro .decision button,.ro .chk{pointer-events:none}
+#modal{position:fixed;inset:0;background:rgba(10,12,20,.5);display:grid;place-items:center;z-index:60;padding:16px}
+#modal .box{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:22px;max-width:440px;width:100%;box-shadow:var(--shadow)}
+#modal p{margin:8px 0 18px;color:var(--ink)}
+#modal .acts{display:flex;justify-content:flex-end;gap:8px}
+#toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:#1D2341;color:#fff;padding:9px 16px;border-radius:8px;z-index:70;box-shadow:var(--shadow);font-size:13px;max-width:calc(100% - 32px)}
+
+@media (max-width:1100px){.wf{grid-template-columns:minmax(0,1fr)}.steps,.side{position:static}.steps{display:flex;overflow-x:auto}.step{min-width:150px}.step.on:before{display:none}.g6{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (max-width:760px){header{position:static}.g2,.form,.form.three{grid-template-columns:minmax(0,1fr)}.g6{grid-template-columns:repeat(2,minmax(0,1fr))}main{padding-inline:16px}.brand span{font-size:15px}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style><link rel="stylesheet" href="pipeline-shell.css">
+
+<header>
+  <div class="hbar">
+    <div class="brand"><img src="data:image/png;base64,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" alt="Blue Projects"><span>Project Horizon · Idea to Business Case</span></div>
+    <span id="sync" class="off"><i></i><span id="syncTxt">Connecting…</span></span>
+    <div class="rail-context">Horizon Initiatives<small>DIGITAL TRANSFORMATION<br>Local prototype</small></div><nav><a class="ideas-link" href="index.html">← Horizon Ideas</a>
+      <button data-nav="dash">Portfolio overview</button>
+      <button data-nav="reg">Initiative register</button>
+      <button data-nav="set">Settings</button>
+      <div class="menu" id="dataMenu"><button id="dataBtn" aria-haspopup="true">Data ▾</button>
+        <div class="dd" hidden id="dd">
+          <div class="lbl">Download</div>
+          <button data-act="exportCsv" class="dl">Register (.csv)</button>
+          <button data-act="exportJson" class="dl">Full backup (.json)</button>
+          <div class="adm"><hr><div class="lbl">Owner only</div>
+          <button data-act="importJson">Import backup (.json)</button>
+          <button data-act="clearSamples">Remove sample projects</button>
+          <button data-act="resetAll">Delete all projects</button></div>
+        </div>
+      </div>
+      <button class="cta rw" data-act="newIdea" id="newBtn">+ New initiative</button>
+    </nav>
+  </div>
+</header>
+<main id="app"><div class="loading">Loading the shared pipeline…</div></main>
+<div id="tip" hidden></div>
+<div id="modal" hidden><div class="box"><h3 id="mTitle"></h3><p id="mText"></p><div class="acts"><button class="btn sec" id="mNo">Cancel</button><button class="btn danger" id="mYes">Confirm</button></div></div></div>
+<div id="toast" hidden></div>
+<input type="file" id="fileIn" accept=".json,application/json" hidden>
+
+<script>
+/* ============================ CONSTANTS ============================ */
+const DEF={rate:55,discount:8,horizon:3,ramp:50,contingency:10,successPct:80,
+  teams:['Digital & AI','Project Management','Commercial & Procurement','Construction Management','Engineering & BIM','Finance','IT / InfoSec','External partner'],
+  functions:['Project Management','Commercial & Procurement','Construction Management','Engineering & BIM','Finance','HR & People','H&S','Business Development','IT & Operations'],
+  pillars:['Process Automation','BlueOS Platform','Data & AI Foundation','People & Adoption']};
+const STREAMS=['Productivity & automation','Better project outcomes','Commercial growth','Cost avoidance'];
+const KPICAT=['Adoption','Efficiency','Quality & risk','Value'];
+const STAGES=['Idea','Business case','Pilot','Scale'];
+const GATES={
+  g0:{name:'Gate 0 — Idea screen',q:'Is this idea worth building a business case for?',opts:['Go','Hold','Stop'],
+      checks:['Problem clearly described','Sponsor and owner named','Linked to a strategy pillar','Value, feasibility, fit and risk scored']},
+  g1:{name:'Gate 1 — Business case approval',q:'Fund and launch a pilot?',opts:['Go','Hold','Stop'],
+      checks:['Hours, software and hardware estimated','Every KPI has a baseline and target','Payback inside the evaluation horizon','Risks and mitigations logged','Data / InfoSec review completed']},
+  g2:{name:'Gate 2 — Pilot review',q:'Scale across the business?',opts:['Scale','Iterate','Stop'],
+      checks:['Pilot KPIs met or on track','Users have adopted the solution','Scale-up costs confirmed','Support and ownership model agreed']}
+};
+const STEPS=[{k:'idea',t:'Idea',s:'Gate 0 one-pager'},{k:'g0',t:'Gate 0',s:'Idea screen',gate:1},{k:'bc',t:'Business case',s:'Costs · benefits · KPIs'},
+  {k:'g1',t:'Gate 1',s:'Approve pilot',gate:1},{k:'pilot',t:'Pilot',s:'Run and measure'},{k:'g2',t:'Gate 2',s:'Scale decision',gate:1},{k:'real',t:'Benefits',s:'Realisation 3 / 6 / 12 m'}];
+
+/* ============================ HELPERS ============================ */
+const clone=o=>JSON.parse(JSON.stringify(o));
+const num=v=>{const n=parseFloat(v);return isFinite(n)?n:0};
+const sum=(a,f)=>(a||[]).reduce((t,r)=>t+f(r),0);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const pad=n=>String(n).padStart(3,'0');
+const ym=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');
+const CUR=ym(new Date());
+const addM=(m,k)=>{const [y,mo]=m.split('-').map(Number);return ym(new Date(y,mo-1+k,1))};
+const mDiff=(a,b)=>{const [y1,m1]=a.split('-').map(Number),[y2,m2]=b.split('-').map(Number);return (y2-y1)*12+(m2-m1)};
+const mLabel=m=>{const [y,mo]=m.split('-').map(Number);return new Date(y,mo-1,1).toLocaleString('en-GB',{month:'short'})+' '+String(y).slice(2)};
+const today=()=>new Date().toISOString().slice(0,10);
+function eur(n,dp){if(n===null||n===undefined||!isFinite(n))return '—';const a=Math.abs(n),s=n<0?'−':'';
+  if(a>=1e6)return s+'€'+(a/1e6).toFixed(dp??2)+'m';if(a>=1e4)return s+'€'+Math.round(a/1e3)+'k';if(a>=1e3)return s+'€'+(a/1e3).toFixed(1)+'k';return s+'€'+Math.round(a)}
+const eurFull=n=>(n<-0.5?'−€':'€')+Math.abs(Math.round(n)).toLocaleString('en-GB');
+const pct=n=>n===null||!isFinite(n)?'—':Math.round(n*100)+'%';
+function ago(iso){if(!iso)return '';const s=(Date.now()-new Date(iso))/1000;if(s<90)return 'just now';if(s<3600)return Math.round(s/60)+' min ago';if(s<86400)return Math.round(s/3600)+' h ago';return new Date(iso).toLocaleDateString('en-GB',{day:'numeric',month:'short'})}
+const stable=o=>JSON.stringify(o,(k,v)=>v&&typeof v==='object'&&!Array.isArray(v)?Object.keys(v).sort().reduce((a,x)=>(a[x]=v[x],a),{}):v);
+function getPath(o,path){return path.split('.').reduce((a,k)=>a==null?a:a[k],o)}
+function setPath(o,path,v){const ks=path.split('.');let a=o;for(let i=0;i<ks.length-1;i++){if(a[ks[i]]==null)a[ks[i]]=/^\d+$/.test(ks[i+1])?[]:{};a=a[ks[i]]}a[ks[ks.length-1]]=v}
+
+/* ============================ STATE ============================ */
+let S={settings:clone(DEF),projects:[]};
+let UI={view:'dash',pid:null,step:0,f:{fn:'',stage:'',samples:true}};
+let db=null,user=null,dls=null,ME=null,CAN_WRITE=false,IS_ADMIN=false,READY=false,NO_DB=false;
+const P=id=>S.projects.find(p=>p.id===id);
+function gate(){return {decision:'',date:'',by:'',notes:'',checks:[]}}
+function shape(p){
+  const b={idea:{title:'',owner:'',sponsor:'',function:'',pillar:'',problem:'',solution:'',beneficiaries:'',size:'S',value:3,feasibility:3,fit:3,risk:2},
+    gates:{g0:gate(),g1:gate(),g2:gate()},
+    bc:{start:addM(CUR,1),horizon:S.settings.horizon,contingency:S.settings.contingency,summary:'',labour:[],software:[],hardware:[],benefits:[],kpis:[],risks:[]},
+    pilot:{start:'',end:'',scope:'',users:'',lessons:''},real:{m3:'',m6:'',m12:'',notes:''}};
+  p.idea=Object.assign(b.idea,p.idea||{});p.gates=p.gates||{};
+  for(const g of ['g0','g1','g2'])p.gates[g]=Object.assign(gate(),p.gates[g]||{});
+  p.bc=Object.assign(b.bc,p.bc||{});for(const k of ['labour','software','hardware','benefits','kpis','risks'])if(!Array.isArray(p.bc[k]))p.bc[k]=[];
+  p.pilot=Object.assign(b.pilot,p.pilot||{});p.real=Object.assign(b.real,p.real||{});return p}
+
+/* ============================ CALC ============================ */
+function stageOf(p){const g=p.gates;if(g.g0.decision!=='Go'&&!(p.pickedUp && !g.g0.decision))return 'Idea';if(g.g1.decision!=='Go')return 'Business case';if(g.g2.decision!=='Scale')return 'Pilot';return 'Scale'}
+function statusOf(p){const st=stageOf(p),g={Idea:'g0','Business case':'g1',Pilot:'g2'}[st];if(!g)return 'Active';
+  const d=p.gates[g].decision;return d==='Stop'?'Stopped':d==='Hold'?'On hold':d==='Iterate'?'Iterating':'Active'}
+function priority(p){const i=p.idea;return Math.max(0,Math.round(((num(i.value)*.4+num(i.fit)*.3+num(i.feasibility)*.3)/5)*100-(num(i.risk)-1)*5))}
+const rateOf=r=>r.rate===''||r.rate==null?S.settings.rate:num(r.rate);
+const lineLabour=r=>num(r.hours)*rateOf(r);
+const lineSwAnn=r=>num(r.seats)*num(r.monthly)*12;
+const lineBen=r=>num(r.hoursPerMonth)*12*rateOf(r)+num(r.otherValue);
+function calc(p){
+  const s=S.settings,b=p.bc;
+  const labour=sum(b.labour,lineLabour),hours=sum(b.labour,r=>num(r.hours));
+  const swOne=sum(b.software,r=>num(r.oneOff)),swAnn=sum(b.software,lineSwAnn);
+  const hwOne=sum(b.hardware,r=>num(r.oneOff)),hwAnn=sum(b.hardware,r=>num(r.annual));
+  const base=labour+swOne+hwOne,cont=base*num(b.contingency)/100,invest=base+cont,run=swAnn+hwAnn;
+  const benefit=sum(b.benefits,lineBen);
+  const H=Math.max(1,Math.round(num(b.horizon)||s.horizon)),ramp=num(s.ramp)/100,dr=num(s.discount)/100;
+  const years=[];let npv=-invest,tot=0;
+  for(let y=1;y<=H;y++){const ben=benefit*(y===1?ramp:1),net=ben-run;years.push({y,ben,run,net});npv+=net/Math.pow(1+dr,y);tot+=net}
+  let payback=null,cum=-invest;
+  if(invest>0||run>0){for(let m=1;m<=H*12;m++){const y=Math.ceil(m/12);cum+=(benefit*(y===1?ramp:1)-run)/12;if(cum>=0){payback=m;break}}}
+  const roi=invest>0?(tot-invest)/invest:null;
+  const has=b.labour.length+b.software.length+b.hardware.length+b.benefits.length>0;
+  return {labour,hours,swOne,swAnn,hwOne,hwAnn,cont,invest,run,benefit,years,npv,roi,payback,H,has,tot};
+}
+function kpiProg(k){const b=num(k.baseline),t=num(k.target);if(k.actual===''||k.actual==null||t===b)return null;
+  const a=num(k.actual);return k.dir==='down'?(b-a)/(b-t):(a-b)/(t-b)}
+function kpiStatus(k){const pr=kpiProg(k);if(pr===null)return ['Not measured','ne'];if(pr>=1)return ['Met','ok'];if(pr>=.7)return ['On track','wa'];return ['Off track','ba']}
+function realised(p){const r=p.real;for(const k of ['m12','m6','m3'])if(r[k]!==''&&r[k]!=null)return {v:num(r[k]),at:k.slice(1)};return null}
+function verdict(p){
+  if(statusOf(p)==='Stopped')return ['Stopped','ne'];
+  const rl=realised(p),c=calc(p);if(!rl||!c.benefit)return ['Pending','ne'];
+  const rp=rl.v/c.benefit,ks=p.bc.kpis.filter(k=>kpiProg(k)!==null),met=ks.length?ks.filter(k=>kpiProg(k)>=1).length/ks.length:1;
+  if(rp>=S.settings.successPct/100&&met>=.66)return ['Success','ok'];if(rp>=.5)return ['Partial','wa'];return ['Failure','ba']}
+function unlocked(p,i){if(i<=1)return true;if(i<=3)return p.gates.g0.decision==='Go'||(p.pickedUp&&!p.gates.g0.decision);if(i<=5)return p.gates.g1.decision==='Go';return p.gates.g2.decision==='Scale'}
+function stepDone(p,i){const c=calc(p);return [!!(p.idea.title&&p.idea.problem),!!p.gates.g0.decision,!!(p.bc.benefits.length&&p.bc.kpis.length&&c.invest),!!p.gates.g1.decision,!!p.pilot.start&&p.bc.kpis.some(k=>k.actual!==''&&k.actual!=null),!!p.gates.g2.decision,!!realised(p)][i]}
+function autoChecks(p,g){const c=calc(p),i=p.idea,b=p.bc;
+  if(g==='g0')return [!!i.problem,!!(i.sponsor&&i.owner),!!i.pillar,true];
+  if(g==='g1')return [b.labour.length>0&&(b.software.length+b.hardware.length)>0,b.kpis.length>0&&b.kpis.every(k=>k.baseline!==''&&k.target!==''),c.payback!==null,b.risks.length>0,null];
+  return [b.kpis.length>0&&b.kpis.every(k=>(kpiProg(k)??-1)>=.7),null,null,null]}
+
+/* ============================ CHARTS ============================ */
+function hpath(x,y,w,h,r){if(w<=0)return '';r=Math.min(r,w,h/2);return `M${x},${y}H${x+w-r}Q${x+w},${y} ${x+w},${y+r}V${y+h-r}Q${x+w},${y+h} ${x+w-r},${y+h}H${x}Z`}
+function vpath(x,y,w,h,r){if(h<=0)return '';r=Math.min(r,h,w/2);return `M${x},${y+h}V${y+r}Q${x},${y} ${x+r},${y}H${x+w-r}Q${x+w},${y} ${x+w},${y+r}V${y+h}Z`}
+function niceMax(v){if(v<=0)return 1;const p=Math.pow(10,Math.floor(Math.log10(v))),n=v/p;return (n<=1?1:n<=2?2:n<=2.5?2.5:n<=5?5:10)*p}
+function hbar(data,cls){
+  if(!data.length)return '<div class="empty">No data for this filter</div>';
+  const W=560,L=120,R=70,rh=36,H=data.length*rh+4,max=Math.max(1,...data.map(d=>d.v));
+  let s=`<svg class="chart" viewBox="0 0 ${W} ${H}" role="img">`;
+  data.forEach((d,i)=>{const y=i*rh+4,bh=20,w=(W-L-R)*d.v/max;
+    s+=`<text x="${L-10}" y="${y+bh/2}" text-anchor="end" dominant-baseline="middle">${esc(d.l)}</text>`;
+    s+=`<rect class="fHit" x="${L}" y="${y-4}" width="${W-L}" height="${bh+8}" data-tip="${esc(d.tip)}"/>`;
+    if(d.v)s+=`<path class="${cls}" d="${hpath(L,y,Math.max(w,3),bh,4)}" data-tip="${esc(d.tip)}"/>`;
+    s+=`<text class="v" x="${L+w+8}" y="${y+bh/2}" dominant-baseline="middle">${esc(d.lab)}</text>`});
+  return s+`<line class="axis" x1="${L}" x2="${L}" y1="0" y2="${H}"/></svg>`}
+function gbar(cats,series,fmt){
+  if(!cats.length)return '<div class="empty">No projects with a business case for this filter</div>';
+  const W=600,H=270,L=52,R=8,T=18,B=48,ph=H-T-B,pw=W-L-R;
+  const max=niceMax(Math.max(1,...series.flatMap(s=>s.values)));
+  let s=`<svg class="chart" viewBox="0 0 ${W} ${H}" role="img">`;
+  for(let i=0;i<=4;i++){const y=T+ph-ph*i/4;s+=`<line class="gl" x1="${L}" x2="${W-R}" y1="${y}" y2="${y}"/><text x="${L-8}" y="${y}" text-anchor="end" dominant-baseline="middle">${fmt(max*i/4)}</text>`}
+  const gw=pw/cats.length,bw=Math.min(26,(gw-18)/series.length-2);
+  cats.forEach((c,ci)=>{const gx=L+ci*gw+(gw-(bw+2)*series.length+2)/2;
+    s+=`<rect class="fHit" x="${L+ci*gw}" y="${T}" width="${gw}" height="${ph}" data-tip="${esc(c.full+'\n'+series.map(se=>se.name+': '+eurFull(se.values[ci])).join('\n'))}"/>`;
+    series.forEach((se,si)=>{const v=se.values[ci],h=ph*v/max,x=gx+si*(bw+2);
+      if(h>0)s+=`<path class="${se.cls}" d="${vpath(x,T+ph-h,bw,h,4)}" data-tip="${esc(c.full+'\n'+se.name+': '+eurFull(v))}"/>`;
+      if(cats.length<=7&&v>0)s+=`<text class="v" x="${x+bw/2}" y="${T+ph-h-5}" text-anchor="middle" style="font-size:10.5px">${fmt(v)}</text>`});
+    s+=`<text x="${L+ci*gw+gw/2}" y="${T+ph+16}" text-anchor="middle">${esc(c.l)}</text>`;
+    if(c.l2)s+=`<text class="q" x="${L+ci*gw+gw/2}" y="${T+ph+31}" text-anchor="middle" style="letter-spacing:0">${esc(c.l2)}</text>`});
+  return s+`<line class="axis" x1="${L}" x2="${W-R}" y1="${T+ph}" y2="${T+ph}"/></svg>`}
+function matrix(pts){
+  const W=560,H=330,L=44,R=14,T=14,B=40,pw=W-L-R,ph=H-T-B;
+  const X=v=>L+(v-.5)/5*pw,Y=v=>T+ph-(v-.5)/5*ph;
+  let s=`<svg class="chart" viewBox="0 0 ${W} ${H}" role="img"><rect class="fQuad" x="${X(3)}" y="${T}" width="${X(5.5)-X(3)}" height="${Y(3)-T}"/>`;
+  [['STRATEGIC BETS',X(.6),T+14,'start'],['QUICK WINS',X(5.4),T+14,'end'],['DEPRIORITISE',X(.6),T+ph-8,'start'],['FILL-INS',X(5.4),T+ph-8,'end']]
+    .forEach(q=>s+=`<text class="q" x="${q[1]}" y="${q[2]}" text-anchor="${q[3]}">${q[0]}</text>`);
+  for(let i=1;i<=5;i++){s+=`<line class="gl" x1="${X(i)}" x2="${X(i)}" y1="${T}" y2="${T+ph}"/><line class="gl" x1="${L}" x2="${W-R}" y1="${Y(i)}" y2="${Y(i)}"/>`;
+    s+=`<text x="${X(i)}" y="${T+ph+15}" text-anchor="middle">${i}</text><text x="${L-10}" y="${Y(i)}" text-anchor="end" dominant-baseline="middle">${i}</text>`}
+  s+=`<text x="${L+pw/2}" y="${H-4}" text-anchor="middle">Feasibility →</text><text transform="translate(12 ${T+ph/2}) rotate(-90)" text-anchor="middle">Value →</text>`;
+  const seen={},maxI=Math.max(1,...pts.map(p=>p.inv));
+  pts.sort((a,b)=>b.inv-a.inv).forEach(p=>{const k=p.x+'_'+p.y;const n=seen[k]=(seen[k]||0)+1;const off=(n-1)*14;
+    const r=7+Math.sqrt(p.inv/maxI)*13,cx=X(p.x)+off,cy=Y(p.y)-off*.4;
+    s+=`<circle class="dot ${p.cls}" cx="${cx}" cy="${cy}" r="${r}" data-tip="${esc(p.tip)}"/><text class="ink" x="${cx+r+4}" y="${cy}" dominant-baseline="middle" style="font-size:11px">${esc(p.id)}</text>`});
+  return s+'</svg>'}
+function heat(rows,cols,m){
+  const mx=Math.max(0,...m.flat());if(!rows.length||!mx)return '<div class="empty">No planned hours in the next 12 months</div>';
+  const W=1100,L=190,T=24,ch=30,cw=(W-L)/cols.length,H=T+rows.length*ch+4;
+  let s=`<svg class="chart" viewBox="0 0 ${W} ${H}" role="img">`;
+  cols.forEach((c,j)=>s+=`<text x="${L+j*cw+cw/2}" y="14" text-anchor="middle" style="font-size:11px">${mLabel(c)}</text>`);
+  rows.forEach((r,i)=>{const y=T+i*ch;s+=`<text x="${L-10}" y="${y+ch/2}" text-anchor="end" dominant-baseline="middle">${esc(r)}</text>`;
+    cols.forEach((c,j)=>{const v=m[i][j],a=v?0.18+0.72*v/mx:0,tip=`data-tip="${esc(r+' · '+mLabel(c)+'\n'+Math.round(v)+' hours planned')}"`;
+      s+=v?`<rect x="${L+j*cw+1}" y="${y+1}" width="${cw-2}" height="${ch-2}" rx="3" style="fill:rgba(20,150,175,${a.toFixed(2)})" ${tip}/>`:`<rect class="fEmpty" x="${L+j*cw+1}" y="${y+1}" width="${cw-2}" height="${ch-2}" rx="3" ${tip}/>`;
+      if(v)s+=`<text class="${a>.5?'onfill':'ink'}" x="${L+j*cw+cw/2}" y="${y+ch/2}" text-anchor="middle" dominant-baseline="middle" style="font-size:10.5px">${Math.round(v)}</text>`})});
+  return s+'</svg>'}
+
+/* ============================ VIEWS ============================ */
+const app=document.getElementById('app');
+function go(view,pid,step){UI.view=view;if(pid!==undefined)UI.pid=pid;if(step!==undefined)UI.step=step;render();window.scrollTo(0,0)}
+function render(){
+  document.querySelectorAll('nav [data-nav]').forEach(b=>b.classList.toggle('on',b.dataset.nav===UI.view));
+  document.body.classList.toggle('ro',!CAN_WRITE);
+  document.getElementById('newBtn').hidden=!CAN_WRITE;
+  document.querySelector('.adm').hidden=!IS_ADMIN;
+  document.querySelectorAll('.dl').forEach(b=>b.hidden=!dls);
+  if(!READY){app.innerHTML='<div class="loading">Loading the shared pipeline…</div>';return}
+  if(UI.view==='wf'&&!P(UI.pid))UI.view='dash';
+  ({dash:vDash,reg:vReg,wf:vWf,set:vSet})[UI.view]();
+  if(!CAN_WRITE)app.querySelectorAll('input,select,textarea').forEach(e=>{if(!e.dataset.flt)e.disabled=true});
+  if(UI.view==='set'&&!IS_ADMIN)app.querySelectorAll('[data-set],[data-setlist]').forEach(e=>e.disabled=true);
+}
+function filtered(){const f=UI.f;return S.projects.filter(p=>(f.samples||!p.sample)&&(!f.fn||p.idea.function===f.fn)&&(!f.stage||stageOf(p)===f.stage))}
+function filterBar(){const f=UI.f;
+  return `<div class="filters"><label>Function <select id="fltFn" data-flt="fn"><option value="">All functions</option>${S.settings.functions.map(x=>`<option ${f.fn===x?'selected':''}>${esc(x)}</option>`).join('')}</select></label>
+  <label>Stage <select id="fltStage" data-flt="stage"><option value="">All stages</option>${STAGES.map(x=>`<option ${f.stage===x?'selected':''}>${x}</option>`).join('')}</select></label>
+  <label><input type="checkbox" id="fltSamples" data-flt="samples" ${f.samples?'checked':''}> Include sample projects</label>
+  <span style="margin-left:auto;color:var(--grey);font-size:12px">${filtered().length} of ${S.projects.length} projects</span></div>`}
+const stPill=st=>`<span class="pill st-${st.split(' ')[0]}">${st}</span>`;
+function statusPill(s){const c={Active:'ok','On hold':'wa',Iterating:'wa',Stopped:'ba'}[s]||'ne';return `<span class="pill ${c}">${s}</span>`}
+const NOTICE=()=>`<div class="note">Local prototype: records are stored in this browser only. No SSO or role permissions are enforced. Financial figures and decisions are estimates until validated.</div>`;
+
+function vDash(){
+  const ps=filtered(),live=ps.filter(p=>statusOf(p)!=='Stopped'),C=Object.fromEntries(ps.map(p=>[p.id,calc(p)]));
+  const approved=live.filter(p=>p.gates.g1.decision==='Go'),withBC=live.filter(p=>stageOf(p)!=='Idea'&&C[p.id].has);
+  const inv=sum(approved,p=>C[p.id].invest),ben=sum(withBC,p=>C[p.id].benefit);
+  const invBC=sum(withBC,p=>C[p.id].invest),totNet=sum(withBC,p=>C[p.id].tot);
+  const roi=invBC?(totNet-invBC)/invBC:null;
+  const pb=withBC.map(p=>C[p.id].payback).filter(x=>x!==null),avgPb=pb.length?pb.reduce((a,b)=>a+b,0)/pb.length:null;
+  const rl=live.filter(p=>realised(p)),claimed=sum(rl,p=>C[p.id].benefit),real=sum(rl,p=>realised(p).v);
+  const tiles=[
+    ['Projects in pipeline',live.length,`${ps.length-live.length} stopped · ${live.filter(p=>statusOf(p)==='On hold').length} on hold`],
+    ['Approved investment',eur(inv),`${approved.length} past Gate 1`],
+    ['Projected annual benefit',eur(ben),`${withBC.length} business case${withBC.length===1?'':'s'}`],
+    ['Portfolio ROI',pct(roi),`over each case's horizon`],
+    ['Average payback',avgPb===null?'—':Math.round(avgPb)+' mo','cases that pay back'],
+    ['Benefits realised',claimed?pct(real/claimed):'—',claimed?`${eur(real)} of ${eur(claimed)} claimed`:'no realisation data yet']];
+  const fun=STAGES.map(st=>{const l=live.filter(p=>stageOf(p)===st);return {l:st,v:l.length,lab:String(l.length),tip:st+': '+l.length+' project'+(l.length===1?'':'s')+(l.length?'\n'+l.map(p=>p.id+' '+p.idea.title).join('\n'):'')}});
+  const stc={'Idea':'fIdea','Business case':'f1','Pilot':'f2','Scale':'fScale'},stb={'Idea':'bIdea','Business case':'b1','Pilot':'b2','Scale':'bScale'};
+  const pts=live.map(p=>({id:p.id,x:num(p.idea.feasibility)||1,y:num(p.idea.value)||1,inv:C[p.id].invest,cls:stc[stageOf(p)],
+    tip:`${p.id} · ${p.idea.title}\nStage: ${stageOf(p)} · Priority ${priority(p)}\nValue ${p.idea.value} · Feasibility ${p.idea.feasibility} · Risk ${p.idea.risk}\nInvestment ${eur(C[p.id].invest)}`}));
+  const ib=withBC.slice(0,8);
+  const cats=ib.map(p=>({l:p.id,l2:(p.idea.title||'').slice(0,16)+((p.idea.title||'').length>16?'…':''),full:p.id+' · '+p.idea.title}));
+  const cols=[...Array(12)].map((_,i)=>addM(CUR,i)),tm={};
+  live.filter(p=>stageOf(p)!=='Idea').forEach(p=>p.bc.labour.forEach(r=>{const mo=Math.max(1,Math.round(num(r.months)||1)),h=num(r.hours)/mo;if(!r.start||!h)return;
+    for(let k=0;k<mo;k++){const j=mDiff(CUR,addM(r.start,k));if(j>=0&&j<12){const t=r.team||'Unassigned';(tm[t]=tm[t]||Array(12).fill(0))[j]+=h}}}));
+  const trows=Object.keys(tm).sort((a,b)=>sum(tm[b],x=>x)-sum(tm[a],x=>x));
+  const rc=rl.map(p=>({l:p.id,l2:'at '+realised(p).at+' months',full:p.id+' · '+p.idea.title}));
+  const kr=live.filter(p=>['Pilot','Scale'].includes(stageOf(p))).flatMap(p=>p.bc.kpis.map(k=>({p,k})));
+  const pend=live.filter(p=>{const st=stageOf(p);return st==='Idea'&&!p.gates.g0.decision||st==='Business case'&&!p.gates.g1.decision||st==='Pilot'&&!p.gates.g2.decision});
+  app.innerHTML=`
+  <div class="kicker">Portfolio dashboard</div><h1 class="ptitle">AI &amp; digitalisation pipeline</h1>
+  <p class="sub">One shared pipeline for the whole company. Every idea and business case entered by anyone appears here live. Stage-gate: Idea → Gate 0 → Business case → Gate 1 → Pilot → Gate 2 → Scale.</p>
+  ${NOTICE()}${filterBar()}
+  <div class="grid g6" style="margin-bottom:16px">${tiles.map(t=>`<div class="tile"><div class="l">${t[0]}</div><div class="v">${t[1]}</div><div class="n">${t[2]}</div></div>`).join('')}</div>
+  <div class="grid g2" style="margin-bottom:16px">
+    <div class="card"><h3>Pipeline by stage</h3><p class="cap">Active and on-hold projects; stopped projects excluded.</p>${hbar(fun,'f1')}
+      ${pend.length?`<div class="note" style="margin:12px 0 0"><b>${pend.length} awaiting a gate decision:</b> ${pend.map(p=>`<a href="#" data-open="${p.id}">${p.id}</a>`).join(', ')}</div>`:''}</div>
+    <div class="card"><h3>Priority matrix</h3><p class="cap">Value vs feasibility from the idea scoring. Bubble size = investment.</p>
+      <div class="legend">${Object.entries(stb).map(([k,c])=>`<span><i class="${c}"></i>${k}</span>`).join('')}</div>${pts.length?matrix(pts):'<div class="empty">No projects</div>'}</div>
+  </div>
+  <div class="grid g2" style="margin-bottom:16px">
+    <div class="card"><h3>Investment vs annual benefit</h3><p class="cap">One-off investment (incl. contingency) against full-year benefit, per business case.</p>
+      <div class="legend"><span><i class="b1"></i>Investment</span><span><i class="b2"></i>Annual benefit</span><span><i class="b3"></i>Annual run cost</span></div>
+      ${gbar(cats,[{name:'Investment',cls:'f1',values:ib.map(p=>C[p.id].invest)},{name:'Annual benefit',cls:'f2',values:ib.map(p=>C[p.id].benefit)},{name:'Annual run cost',cls:'f3',values:ib.map(p=>C[p.id].run)}],v=>eur(v,1))}</div>
+    <div class="card"><h3>Benefits realisation</h3><p class="cap">Claimed annual benefit vs latest measured run-rate (3 / 6 / 12 months after scale).</p>
+      <div class="legend"><span><i class="b1"></i>Claimed</span><span><i class="b2"></i>Realised</span></div>
+      ${rc.length?gbar(rc,[{name:'Claimed',cls:'f1',values:rl.map(p=>C[p.id].benefit)},{name:'Realised',cls:'f2',values:rl.map(p=>realised(p).v)}],v=>eur(v,1)):'<div class="empty">Record realised benefits in step 7 of a scaled project to populate this chart</div>'}</div>
+  </div>
+  <div class="card" style="margin-bottom:16px"><h3>Resource capacity — hours by team by month</h3><p class="cap">Planned labour from business cases past Gate 0, spread evenly across each line's duration. Next 12 months.</p><div class="tw"><div style="min-width:640px">${heat(trows,cols,trows.map(t=>tm[t]))}</div></div></div>
+  <div class="card" style="margin-bottom:16px"><h3>KPI tracker — actual vs target</h3><p class="cap">Projects in Pilot or Scale. Met = 100% of the target movement · On track ≥ 70% · Off track below.</p>
+    ${kr.length?`<div class="tw"><table><thead><tr><th>Project</th><th>KPI</th><th>Category</th><th class="num">Baseline</th><th class="num">Target</th><th class="num">Actual</th><th>Progress</th><th>Status</th></tr></thead><tbody>
+    ${kr.map(({p,k})=>{const pr=kpiProg(k),st=kpiStatus(k);return `<tr class="click" data-open="${p.id}" data-step="4"><td><b>${p.id}</b></td><td>${esc(k.name)}</td><td>${esc(k.cat)}</td><td class="num">${esc(k.baseline)} ${esc(k.unit)}</td><td class="num">${esc(k.target)} ${esc(k.unit)}</td><td class="num">${k.actual===''||k.actual==null?'—':esc(k.actual)+' '+esc(k.unit)}</td>
+      <td><div class="pbar"><i style="width:${pr===null?0:Math.max(0,Math.min(100,pr*100))}%"></i></div></td><td><span class="pill ${st[1]}">${st[0]}</span></td></tr>`}).join('')}</tbody></table></div>`:'<div class="empty">No projects in Pilot or Scale yet</div>'}</div>
+  <div class="card"><div class="reghead"><div><h3>Register</h3><p class="cap">Click a row to open the project. Click a column heading or use Sort by to reorder.</p></div>${sortBar()}</div>${regTable(ps)}</div>`;
+}
+const SORTS=[
+  ['stage','Stage',p=>STAGES.indexOf(stageOf(p.p)),'desc'],
+  ['priority','Priority score',p=>p.pr,'desc'],
+  ['id','Project ID',p=>parseInt((p.p.id.match(/(\d+)$/)||[])[1]||0),'asc'],
+  ['title','Project name',p=>(p.p.idea.title||'').toLowerCase(),'asc'],
+  ['function','Function',p=>(p.p.idea.function||'').toLowerCase(),'asc'],
+  ['owner','Owner',p=>(p.p.idea.owner||'').toLowerCase(),'asc'],
+  ['status','Status',p=>['Active','Iterating','On hold','Stopped'].indexOf(statusOf(p.p)),'asc'],
+  ['invest','Investment',p=>p.c.invest||null,'desc'],
+  ['benefit','Annual benefit',p=>p.c.benefit||null,'desc'],
+  ['roi','ROI',p=>p.c.has&&p.c.roi!==null?p.c.roi:null,'desc'],
+  ['payback','Payback',p=>p.c.payback,'asc'],
+  ['verdict','Verdict',p=>['Success','Partial','Pending','Failure','Stopped'].indexOf(verdict(p.p)[0]),'asc'],
+  ['updated','Last updated',p=>p.p.updatedAt||'','desc']];
+try{const sv=JSON.parse(localStorage.getItem('horizon.sort')||'null');if(sv&&SORTS.some(x=>x[0]===sv.key))UI.sort=sv}catch(e){}
+if(!UI.sort)UI.sort={key:'stage',dir:'desc'};
+function setSort(key,dir){const d=SORTS.find(x=>x[0]===key);if(!d)return;
+  UI.sort={key,dir:dir||(UI.sort.key===key?(UI.sort.dir==='asc'?'desc':'asc'):d[3])};
+  try{localStorage.setItem('horizon.sort',JSON.stringify(UI.sort))}catch(e){}render()}
+function sortBar(){const so=UI.sort;
+  return `<div class="sortbar"><label for="regSort">Sort by</label><select id="regSort" data-sortsel="1">${SORTS.map(x=>`<option value="${x[0]}" ${x[0]===so.key?'selected':''}>${x[1]}</option>`).join('')}</select>
+  <button type="button" class="btn sec sm" data-act="sortDir" aria-label="Reverse sort order">${so.dir==='asc'?'↑ Ascending':'↓ Descending'}</button></div>`}
+function regTable(ps){
+  if(!ps.length)return `<div class="empty">No projects yet${CAN_WRITE?' — click “+ New idea” to add the first one.':'.'}</div>`;
+  const so=UI.sort,def=SORTS.find(x=>x[0]===so.key)||SORTS[0],m=so.dir==='asc'?1:-1;
+  const rows=ps.map(p=>({p,c:calc(p),pr:priority(p)}));
+  rows.sort((a,b)=>{const x=def[2](a),y=def[2](b);
+    const xn=x===null||x===undefined,yn=y===null||y===undefined;
+    if(xn!==yn)return xn?1:-1;
+    if(x<y)return -m;if(x>y)return m;return b.pr-a.pr||a.p.id.localeCompare(b.p.id)});
+  const th=(k,label,num)=>{const on=so.key===k;return `<th class="sortable ${num?'num':''} ${on?'on':''}" data-sortkey="${k}" tabindex="0" aria-sort="${on?(so.dir==='asc'?'ascending':'descending'):'none'}">${label}<span class="arr">${on?(so.dir==='asc'?'▲':'▼'):'↕'}</span></th>`};
+  return `<div class="tw"><table><thead><tr>${th('id','ID')}${th('title','Project')}${th('function','Function')}${th('owner','Owner')}${th('stage','Stage')}${th('status','Status')}${th('priority','Priority',1)}${th('invest','Investment',1)}${th('benefit','Benefit / yr',1)}${th('roi','ROI',1)}${th('payback','Payback',1)}${th('verdict','Verdict')}${th('updated','Updated')}</tr></thead><tbody>
+  ${rows.map(({p,c,pr})=>{const v=verdict(p);return `<tr class="click" data-open="${p.id}"><td><b>${p.id}</b></td><td>${esc(p.idea.title||'(untitled)')}${p.sample?'<span class="tag">sample</span>':''}</td><td>${esc(p.idea.function)}</td><td>${esc(p.idea.owner)}</td>
+   <td>${stPill(stageOf(p))}</td><td>${statusPill(statusOf(p))}</td><td class="num">${pr}</td><td class="num">${c.invest?eur(c.invest):'—'}</td><td class="num">${c.benefit?eur(c.benefit):'—'}</td><td class="num">${c.has?pct(c.roi):'—'}</td><td class="num">${c.payback?c.payback+' mo':'—'}</td><td><span class="pill ${v[1]}">${v[0]}</span></td><td style="white-space:nowrap;color:var(--grey);font-size:12.5px">${esc(ago(p.updatedAt))}</td></tr>`}).join('')}</tbody></table></div>`}
+function vReg(){app.innerHTML=`<div class="kicker">Portfolio register</div><h1 class="ptitle">All projects</h1><p class="sub">Every idea and business case, with stage, gate status and headline financials.</p>${NOTICE()}${filterBar()}<div class="card"><div class="reghead"><div></div>${sortBar()}</div>${regTable(filtered())}</div>`}
+
+/* ---------------- workflow ---------------- */
+function fld(label,k,val,type='text',opts){const full=type==='area'||opts?.full?' full':'',id='f_'+k.replace(/\./g,'_');
+  if(type==='area')return `<div class="f${full}"><label for="${id}">${label}</label><textarea id="${id}" data-k="${k}" placeholder="${esc(opts?.ph||'')}">${esc(val)}</textarea></div>`;
+  if(type==='select')return `<div class="f${full}"><label for="${id}">${label}</label><select id="${id}" data-k="${k}"><option value="">Select…</option>${opts.list.map(o=>`<option ${o===val?'selected':''}>${esc(o)}</option>`).join('')}</select></div>`;
+  return `<div class="f${full}"><label for="${id}">${label}</label><input id="${id}" type="${type}" data-k="${k}" value="${esc(val)}" placeholder="${esc(opts?.ph||'')}"></div>`}
+function scoreF(label,k,val,hint){return `<div class="f"><label>${label} <span style="font-weight:400;color:var(--muted)">${hint}</span></label><div class="score">${[1,2,3,4,5].map(n=>`<button type="button" data-score="${k}" data-v="${n}" class="${num(val)===n?'on':''}">${n}</button>`).join('')}</div></div>`}
+const CALCS={};
+function tbl(path,cols,addLabel,cap){
+  const p=P(UI.pid),rows=getPath(p,path)||[];CALCS[path]=cols;
+  const cell=(c,r,i)=>{if(c.calc)return `<td class="calc" data-calc="${path}|${i}|${cols.indexOf(c)}">${c.calc(r)}</td>`;
+    const a=`id="${path.replace('.','_')}_${i}_${c.f}" data-arr="${path}" data-i="${i}" data-f="${c.f}" aria-label="${esc(c.h)}"`;
+    if(c.type==='select')return `<td style="min-width:${c.w||120}px"><select ${a}>${c.opts().map(o=>`<option ${o===r[c.f]?'selected':''}>${esc(o)}</option>`).join('')}</select></td>`;
+    if(c.type==='dir')return `<td style="min-width:95px"><select ${a}><option value="up" ${r[c.f]!=='down'?'selected':''}>↑ up</option><option value="down" ${r[c.f]==='down'?'selected':''}>↓ down</option></select></td>`;
+    return `<td style="min-width:${c.w||80}px"><input ${a} type="${c.type||'text'}" value="${esc(r[c.f]??'')}" placeholder="${esc(c.ph||'')}"></td>`};
+  return `${cap?`<p class="cap">${cap}</p>`:''}<div class="tw"><table><thead><tr>${cols.map(c=>`<th class="${c.type==='number'||c.calc?'num':''}">${c.h}</th>`).join('')}<th></th></tr></thead><tbody>
+  ${rows.length?rows.map((r,i)=>`<tr>${cols.map(c=>cell(c,r,i)).join('')}<td><button class="x" title="Remove line" aria-label="Remove line" data-act="delrow" data-arr="${path}" data-i="${i}">✕</button></td></tr>`).join(''):`<tr><td colspan="${cols.length+1}" class="empty" style="padding:10px">Nothing added yet</td></tr>`}</tbody></table></div>
+  <button class="btn sec sm addrow" data-act="addrow" data-arr="${path}">+ ${addLabel}</button>`}
+function updateCalcs(){const p=P(UI.pid);if(!p)return;
+  document.querySelectorAll('[data-calc]').forEach(el=>{const [path,i,ci]=el.dataset.calc.split('|');const r=(getPath(p,path)||[])[i];if(r&&CALCS[path])el.innerHTML=CALCS[path][ci].calc(r)});
+  document.querySelectorAll('[data-kst]').forEach(el=>{const k=p.bc.kpis[+el.dataset.kst];if(k)el.innerHTML=kstat(k)});
+  const cf=document.getElementById('cashflow');if(cf)cf.innerHTML=cashTable(p)}
+const NEWROW={'bc.labour':()=>({team:S.settings.teams[0],task:'',hours:'',rate:'',start:P(UI.pid).bc.start||CUR,months:3}),'bc.software':()=>({item:'',seats:'',monthly:'',oneOff:''}),
+  'bc.hardware':()=>({item:'',oneOff:'',annual:''}),'bc.benefits':()=>({stream:STREAMS[0],desc:'',hoursPerMonth:'',rate:'',otherValue:''}),
+  'bc.kpis':()=>({name:'',cat:KPICAT[1],unit:'',dir:'up',baseline:'',target:'',actual:''}),'bc.risks':()=>({risk:'',sev:'Medium',mit:''})};
+function cashTable(p){const c=calc(p);
+  return `<table><thead><tr><th>€</th><th class="num">Year 0</th>${c.years.map(y=>`<th class="num">Year ${y.y}</th>`).join('')}<th class="num">Total</th></tr></thead><tbody>
+  <tr><td>Investment</td><td class="num">${eurFull(-c.invest)}</td>${c.years.map(()=>'<td class="num">—</td>').join('')}<td class="num">${eurFull(-c.invest)}</td></tr>
+  <tr><td>Benefit${S.settings.ramp<100?` <span style="color:var(--muted);font-size:12px">(Y1 at ${S.settings.ramp}%)</span>`:''}</td><td class="num">—</td>${c.years.map(y=>`<td class="num">${eurFull(y.ben)}</td>`).join('')}<td class="num">${eurFull(sum(c.years,y=>y.ben))}</td></tr>
+  <tr><td>Run cost</td><td class="num">—</td>${c.years.map(y=>`<td class="num">${eurFull(-y.run)}</td>`).join('')}<td class="num">${eurFull(-sum(c.years,y=>y.run))}</td></tr>
+  <tr style="font-weight:700;color:var(--head)"><td>Net cash flow</td><td class="num">${eurFull(-c.invest)}</td>${c.years.map(y=>`<td class="num">${eurFull(y.net)}</td>`).join('')}<td class="num">${eurFull(c.tot-c.invest)}</td></tr></tbody></table>`}
+const kstat=k=>{const s=kpiStatus(k);return `<span class="pill ${s[1]}">${s[0]}</span>`};
+function kpiActualTable(p){const ks=p.bc.kpis;if(!ks.length)return '<div class="empty">No KPIs defined in the business case</div>';
+  return `<div class="tw"><table><thead><tr><th>KPI</th><th class="num">Baseline</th><th class="num">Target</th><th class="num">Actual</th><th>Status</th></tr></thead><tbody>${ks.map((k,i)=>
+    `<tr><td>${esc(k.name)} <span style="color:var(--muted)">(${k.dir==='down'?'↓':'↑'} ${esc(k.unit)})</span></td><td class="num">${esc(k.baseline)}</td><td class="num">${esc(k.target)}</td><td style="width:120px"><input id="kact_${i}" aria-label="Actual" type="number" step="any" data-arr="bc.kpis" data-i="${i}" data-f="actual" value="${esc(k.actual)}"></td><td data-kst="${i}">${kstat(k)}</td></tr>`).join('')}</tbody></table></div>`}
+
+function stepBody(p,i){
+  const s=S.settings,st=STEPS[i];
+  if(!unlocked(p,i)){const need=i<=3?'Gate 0 = Go':i<=5?'Gate 1 = Go':'Gate 2 = Scale';
+    return `<div class="panel lockmsg"><h3>${st.t} is locked</h3>This step opens once <b>${need}</b>. Complete the earlier steps first.<br><br><button class="btn" data-goto="${i<=3?1:i<=5?3:5}">Go to the gate</button></div>`}
+  if(st.k==='idea'){const d=p.idea;
+    return `<div class="panel"><h3>Idea one-pager</h3><p class="cap">The Gate 0 capture: enough to decide whether a full business case is worth the effort.</p><div class="form">
+      ${fld('Idea title','idea.title',d.title,'text',{full:1,ph:'e.g. Automated weekly status reports'})}
+      ${fld('Owner (who will run it)','idea.owner',d.owner)}${fld('Executive sponsor','idea.sponsor',d.sponsor)}
+      ${fld('Business function','idea.function',d.function,'select',{list:s.functions})}${fld('Strategy pillar','idea.pillar',d.pillar,'select',{list:s.pillars})}
+      ${fld('Problem / opportunity','idea.problem',d.problem,'area',{ph:'What hurts today? Who feels it? How often?'})}
+      ${fld('Proposed solution','idea.solution',d.solution,'area',{ph:'What would we build or buy, in plain terms?'})}
+      ${fld('Who benefits','idea.beneficiaries',d.beneficiaries,'text',{full:1,ph:'Teams, number of users, clients'})}
+      ${fld('Rough size','idea.size',d.size,'select',{list:['S','M','L']})}
+    </div></div>
+    <div class="panel"><h3>Quick scoring</h3><p class="cap">1 = low, 5 = high. Drives the priority score and the dashboard matrix.</p><div class="form">
+      ${scoreF('Value','idea.value',d.value,'impact if it works')}${scoreF('Feasibility','idea.feasibility',d.feasibility,'data, tools, skills ready')}
+      ${scoreF('Strategic fit','idea.fit',d.fit,'alignment to Horizon')}${scoreF('Risk','idea.risk',d.risk,'delivery / adoption risk')}
+    </div></div>${navBtns(i)}`}
+  if(st.gate){const gk=st.k,G=GATES[gk],g=p.gates[gk],auto=autoChecks(p,gk);
+    return `<div class="panel"><h3>${G.name}</h3><p class="cap">${G.q}</p>
+      <div class="note">${gk==='g0'?`Priority score <b>${priority(p)}</b> / 100 · Value ${p.idea.value} · Feasibility ${p.idea.feasibility} · Fit ${p.idea.fit} · Risk ${p.idea.risk}`:
+        gk==='g1'?(()=>{const c=calc(p);return `Investment <b>${eur(c.invest)}</b> · Benefit <b>${eur(c.benefit)}/yr</b> · ROI <b>${pct(c.roi)}</b> · Payback <b>${c.payback?c.payback+' months':'not within horizon'}</b> · NPV <b>${eur(c.npv)}</b>`})():
+        `KPIs: ${p.bc.kpis.map(k=>`${esc(k.name)} — <b>${kpiStatus(k)[0]}</b>`).join(' · ')||'none defined'}`}</div>
+      <h3 style="font-size:14px;margin:4px 0 8px">Gate criteria</h3>
+      ${G.checks.map((c,j)=>`<label class="chk"><input type="checkbox" id="chk_${gk}_${j}" data-k="gates.${gk}.checks.${j}" ${g.checks[j]?'checked':''}> ${c}${auto[j]===true?'<em class="pill ok">detected ✓</em>':auto[j]===false?'<em class="pill wa">not yet evidenced</em>':''}</label>`).join('')}
+      <h3 style="font-size:14px;margin:16px 0 4px">Decision</h3>
+      <div class="decision">${G.opts.map(o=>`<button type="button" class="${o} ${g.decision===o?'on':''}" data-dec="${gk}" data-v="${o}">${o}</button>`).join('')}</div>
+      <div class="form">${fld('Decision date',`gates.${gk}.date`,g.date,'date')}${fld('Decided by',`gates.${gk}.by`,g.by,'text',{ph:'e.g. Digital Steering Committee'})}
+      ${fld('Conditions / notes',`gates.${gk}.notes`,g.notes,'area')}</div></div>${navBtns(i)}`}
+  if(st.k==='bc'){const b=p.bc,rate=s.rate;
+    return `<div class="panel"><h3>Case basics</h3><p class="cap">Default internal rate €${rate}/h (set in Settings). Leave a rate blank to use it.</p><div class="form">
+      ${fld('Start month','bc.start',b.start,'month')}${fld('Evaluation horizon (years)','bc.horizon',b.horizon,'number')}
+      ${fld('Contingency on one-off cost (%)','bc.contingency',b.contingency,'number')}
+      ${fld('Executive summary','bc.summary',b.summary,'area',{ph:'One or two sentences: the problem, the fix, the payoff.'})}</div></div>
+    <div class="panel"><h3>1 · Hours estimate</h3>${tbl('bc.labour',[{f:'team',h:'Team',type:'select',opts:()=>s.teams,w:170},{f:'task',h:'Task / role',w:180},{f:'hours',h:'Hours',type:'number',w:80},{f:'rate',h:'€/h',type:'number',ph:String(rate),w:70},{f:'start',h:'Start',type:'month',w:130},{f:'months',h:'Months',type:'number',w:65},{h:'Cost',calc:r=>eurFull(lineLabour(r))}],'Add labour line','Internal and partner effort to build, test and deploy. Feeds the capacity heatmap.')}</div>
+    <div class="panel"><h3>2 · Software estimate</h3>${tbl('bc.software',[{f:'item',h:'Item',w:200},{f:'seats',h:'Seats',type:'number'},{f:'monthly',h:'€/seat/mo',type:'number'},{f:'oneOff',h:'One-off €',type:'number'},{h:'Annual',calc:r=>eurFull(lineSwAnn(r))}],'Add software line','Per-seat SaaS, licences, APIs.')}</div>
+    <div class="panel"><h3>3 · Hardware &amp; cloud estimate</h3>${tbl('bc.hardware',[{f:'item',h:'Item',w:220},{f:'oneOff',h:'One-off €',type:'number'},{f:'annual',h:'Annual €',type:'number'}],'Add hardware / cloud line','Devices, hosting, storage, compute.')}</div>
+    <div class="panel"><h3>4 · Benefits</h3>${tbl('bc.benefits',[{f:'stream',h:'Stream',type:'select',opts:()=>STREAMS,w:170},{f:'desc',h:'Description',w:200},{f:'hoursPerMonth',h:'Hours saved/mo',type:'number'},{f:'rate',h:'€/h',type:'number',ph:String(rate),w:70},{f:'otherValue',h:'Other €/yr',type:'number'},{h:'Annual',calc:r=>eurFull(lineBen(r))}],'Add benefit','Full-year run-rate once live: hours saved × rate, plus any other € value (fewer reworks, better awards, won work).')}</div>
+    <div class="panel"><h3>5 · Measurable KPIs</h3>${tbl('bc.kpis',[{f:'name',h:'KPI',w:200},{f:'cat',h:'Category',type:'select',opts:()=>KPICAT,w:120},{f:'unit',h:'Unit',w:60},{f:'dir',h:'Better',type:'dir'},{f:'baseline',h:'Baseline',type:'number'},{f:'target',h:'Target',type:'number'}],'Add KPI','Every KPI needs a baseline and a target. Actuals are captured in the Pilot and Benefits steps.')}</div>
+    <div class="panel"><h3>6 · Risks</h3>${tbl('bc.risks',[{f:'risk',h:'Risk',w:240},{f:'sev',h:'Severity',type:'select',opts:()=>['High','Medium','Low'],w:100},{f:'mit',h:'Mitigation',w:260}],'Add risk')}</div>
+    <div class="panel"><h3>Cash flow</h3><p class="cap">Discount rate ${s.discount}% · Year-1 benefit ramp ${s.ramp}% (Settings).</p><div class="tw" id="cashflow">${cashTable(p)}</div></div>${navBtns(i)}`}
+  if(st.k==='pilot'){const d=p.pilot;
+    return `<div class="panel"><h3>Pilot plan</h3><div class="form">${fld('Pilot start','pilot.start',d.start,'date')}${fld('Pilot end','pilot.end',d.end,'date')}
+      ${fld('Scope','pilot.scope',d.scope,'text',{ph:'Offices, projects, teams'})}${fld('Users in pilot','pilot.users',d.users,'number')}</div></div>
+      <div class="panel"><h3>KPI actuals</h3><p class="cap">Enter the latest measured value. Status updates live and flows to the dashboard.</p>${kpiActualTable(p)}</div>
+      <div class="panel"><h3>Lessons learned</h3><div class="form">${fld('What worked, what didn’t, what changes for scale','pilot.lessons',d.lessons,'area')}</div></div>${navBtns(i)}`}
+  if(st.k==='real'){const c=calc(p),r=realised(p),v=verdict(p);
+    return `<div class="panel"><h3>Benefits realisation</h3><p class="cap">Record the measured annualised benefit run-rate after scale-up. Claimed in the business case: <b>${eurFull(c.benefit)}/yr</b>.</p>
+      <div class="form three">${fld('At 3 months (€/yr)','real.m3',p.real.m3,'number')}${fld('At 6 months (€/yr)','real.m6',p.real.m6,'number')}${fld('At 12 months (€/yr)','real.m12',p.real.m12,'number')}</div>
+      <div class="note" style="margin-top:14px">Latest: <b>${r?eurFull(r.v)+' at '+r.at+' months':'—'}</b> · Realised vs claimed <b>${r&&c.benefit?pct(r.v/c.benefit):'—'}</b> · Verdict <span class="pill ${v[1]}">${v[0]}</span><br><span style="color:var(--grey);font-size:12px">Success = at least ${s.successPct}% of claimed benefit realised and at least two-thirds of KPIs met.</span></div></div>
+      <div class="panel"><h3>KPI actuals</h3>${kpiActualTable(p)}</div>
+      <div class="panel"><h3>Notes</h3><div class="form">${fld('Measurement method, caveats','real.notes',p.real.notes,'area')}</div></div>${navBtns(i)}`}
+}
+function navBtns(i){return `<div class="navbtns"><button class="btn sec" data-goto="${i-1}" ${i===0?'style="visibility:hidden"':''}>← ${i?STEPS[i-1].t:''}</button>${i<STEPS.length-1?`<button class="btn" data-goto="${i+1}">${STEPS[i+1].t} →</button>`:'<button class="btn" data-nav="dash">View dashboard →</button>'}</div>`}
+function sideHtml(p){const c=calc(p),v=verdict(p),pr=priority(p);
+  return `<div class="card"><div class="kicker" style="margin-bottom:6px">${p.id}</div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px">${stPill(stageOf(p))}${statusPill(statusOf(p))}</div>
+    <div class="kv"><span>Priority score</span><b>${pr} / 100</b></div><div class="pbar" style="margin:4px 0 8px"><i style="width:${pr}%;background:var(--c1)"></i></div>
+    <div class="kv"><span>Function</span><b style="font-weight:400">${esc(p.idea.function||'—')}</b></div>
+    <div class="who" id="who"></div></div>
+  <div class="card"><h3 style="font-size:15px;margin-bottom:8px">Business case</h3>
+    <div class="kv"><span>Hours</span><b>${Math.round(c.hours).toLocaleString('en-GB')}</b></div>
+    <div class="kv"><span>Labour</span><b>${eurFull(c.labour)}</b></div>
+    <div class="kv"><span>Software (one-off)</span><b>${eurFull(c.swOne)}</b></div>
+    <div class="kv"><span>Hardware (one-off)</span><b>${eurFull(c.hwOne)}</b></div>
+    <div class="kv"><span>Contingency</span><b>${eurFull(c.cont)}</b></div>
+    <div class="kv"><span><b>Investment</b></span><b>${eurFull(c.invest)}</b></div>
+    <div class="kv"><span>Run cost / yr</span><b>${eurFull(c.run)}</b></div>
+    <div class="kv"><span>Benefit / yr</span><b>${eurFull(c.benefit)}</b></div></div>
+  <div class="card"><div class="grid" style="grid-template-columns:1fr 1fr;gap:10px">
+    <div class="tile" style="padding:8px 10px"><div class="l">ROI</div><div class="v" style="font-size:20px">${c.has?pct(c.roi):'—'}</div></div>
+    <div class="tile" style="padding:8px 10px"><div class="l">Payback</div><div class="v" style="font-size:20px">${c.payback?c.payback+' mo':'—'}</div></div>
+    <div class="tile" style="padding:8px 10px"><div class="l">NPV</div><div class="v" style="font-size:20px">${c.has?eur(c.npv):'—'}</div></div>
+    <div class="tile" style="padding:8px 10px"><div class="l">Verdict</div><div style="margin-top:6px"><span class="pill ${v[1]}">${v[0]}</span></div></div></div>
+    <div style="color:var(--muted);font-size:11.5px;margin-top:8px">${c.H}-year horizon · ${S.settings.discount}% discount rate</div></div>
+  <button class="btn ghost sm rw" data-act="delProject">Delete this project</button>`}
+async function fillWho(p){const el=document.getElementById('who');if(!el)return;
+  if(!p.updatedBy||!user){el.textContent=p.updatedAt?'Last edited '+ago(p.updatedAt):'';return}
+  const ps=await user.profiles([p.updatedBy]);const pr=ps[p.updatedBy];const el2=document.getElementById('who');if(!el2||UI.pid!==p.id)return;
+  el2.innerHTML='';const img=document.createElement('img');img.src=pr.avatarUrl;img.alt='';const t=document.createElement('span');
+  t.textContent='Last edited by '+(pr.isMe?'you':(pr.name||'a colleague'))+' · '+ago(p.updatedAt);el2.append(img,t)}
+function vWf(){const p=P(UI.pid);
+  app.innerHTML=`${NOTICE()}${p.sourceIdeaId?`<div class="note">Picked up from Horizon Ideas · <a href="index.html?idea=${encodeURIComponent(p.sourceIdeaId)}">View source idea ${esc(p.sourceIdeaId)}</a> · Gate 0 is not automatically approved.</div>`:''}<div class="wfhead"><div class="grow"><div class="kicker">Workflow · ${p.id}${p.sample?' · sample':''}</div><h1 class="ptitle" id="wfTitle">${esc(p.idea.title||'New idea')}</h1></div>
+    <button class="btn sec sm" data-nav="dash">Back to dashboard</button></div>
+  <div class="wf"><div class="steps">${STEPS.map((s,i)=>`<div class="step ${s.gate?'gate':''} ${i===UI.step?'on':''} ${stepDone(p,i)?'done':''} ${unlocked(p,i)?'':'lock'}" data-goto="${i}" tabindex="0"><div class="dot"><span>${stepDone(p,i)?'✓':i+1}</span></div><div><b>${s.t}</b><small>${s.s}</small></div></div>`).join('')}</div>
+  <div id="body">${stepBody(p,UI.step)}</div><div class="side" id="side">${sideHtml(p)}</div></div>`;fillWho(p)}
+function refreshSide(){const p=P(UI.pid);if(!p)return;const sd=document.getElementById('side');if(sd){sd.innerHTML=sideHtml(p);fillWho(p)}const t=document.getElementById('wfTitle');if(t)t.textContent=p.idea.title||'New idea';
+  document.querySelectorAll('.step').forEach((el,i)=>{el.classList.toggle('done',stepDone(p,i));el.classList.toggle('lock',!unlocked(p,i));const d=el.querySelector('.dot span');if(d)d.textContent=stepDone(p,i)?'✓':i+1})}
+function rerenderBody(){const p=P(UI.pid);const b=document.getElementById('body');if(b)b.innerHTML=stepBody(p,UI.step);if(!CAN_WRITE)b.querySelectorAll('input,select,textarea').forEach(e=>e.disabled=true);refreshSide()}
+
+/* ---------------- settings ---------------- */
+function vSet(){const s=S.settings;
+  const f=(l,k)=>`<div class="f"><label for="s_${k}">${l}</label><input id="s_${k}" type="number" data-set="${k}" value="${esc(s[k])}"></div>`;
+  const ta=(l,k)=>`<div class="f"><label for="s_${k}">${l} <span style="font-weight:400;color:var(--muted)">one per line</span></label><textarea id="s_${k}" data-setlist="${k}" style="min-height:160px">${esc(s[k].join('\n'))}</textarea></div>`;
+  app.innerHTML=`<div class="kicker">Settings</div><h1 class="ptitle">Assumptions &amp; lists</h1><p class="sub">Shared by everyone. Changes recalculate every business case and the dashboard.</p>
+  ${IS_ADMIN?'':'<div class="note">Only the pipeline owner can change these shared assumptions. Ask them if one needs updating.</div>'}
+  <div class="panel"><h3>Financial assumptions</h3><div class="form three">
+   ${f('Default internal rate (€/h)','rate')}${f('Discount rate (%)','discount')}${f('Default horizon (years)','horizon')}
+   ${f('Year-1 benefit ramp (%)','ramp')}${f('Default contingency (%)','contingency')}${f('Success threshold: benefit realised (%)','successPct')}</div></div>
+  <div class="panel"><h3>Lists</h3><div class="form three">${ta('Teams (capacity view)','teams')}${ta('Business functions','functions')}${ta('Strategy pillars','pillars')}</div></div>`}
+
+/* ============================ SHARED STORAGE ============================ */
+const dirty=new Set(),inflight=new Set(),pendingCreate=new Set();let serverIds=new Set(),errShown=false;let flushT=null,flushing=false,setT=null,pendingRR=false;
+function sync(txt,ok=true){document.getElementById('syncTxt').textContent=txt;document.getElementById('sync').classList.toggle('off',!ok)}
+function touch(p){p.updatedAt=new Date().toISOString();p.updatedBy='Local user';localSave();sync('Saved in this browser')}
+async function flush(){if(flushing){clearTimeout(flushT);flushT=setTimeout(flush,300);return}flushing=true;
+  const ids=[...dirty];dirty.clear();
+  for(const id of ids){const p=P(id);if(!p)continue;inflight.add(id);
+    try{await db.doc('projects/'+id).set(clone(p))}
+    catch(e){await writeErr(e,()=>{dirty.add(id)})}
+    
+    finally{inflight.delete(id)}}
+  flushing=false;if(dirty.size){flushT=setTimeout(flush,2500)}else{errShown=false;sync('All changes saved')}}
+async function writeErr(e,retry){const c=e&&e.code;
+  if(c==='invalid_argument'){CAN_WRITE=false;toast('Your changes could not be saved: you have view-only access.');render()}
+  else if(c==='quota_exceeded'){toast('The pipeline is full. Delete old projects to add new ones.')}
+  else if(c==='revoked'||c==='not_granted'){CAN_WRITE=false;render()}
+  else{sync('Not saved yet — retrying…',false);if(!errShown){errShown=true;toast('Couldn’t save yet ('+(c||'error')+'). Retrying automatically — keep this page open.')}retry&&retry()}}
+function editing(){const a=document.activeElement;return a&&app.contains(a)&&/^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName)}
+function onProjects(snap){
+  const incoming={};snap.docs.forEach(d=>{const x=d.data();if(x&&x.idea)incoming[d.id]=x});
+  let changedOpen=false,ownEcho=false,any=!READY;const next=[];
+  for(const [id,data] of Object.entries(incoming)){const local=P(id);
+    if(local&&(dirty.has(id)||inflight.has(id))){next.push(local);continue}
+    const shaped=shape(Object.assign(clone(data),{id}));
+    if(local&&stable(local)===stable(shaped)){next.push(local);continue}
+    next.push(shaped);any=true;if(id===UI.pid&&data.updatedBy!==ME)changedOpen=true;else if(id===UI.pid)ownEcho=true}
+  Object.keys(incoming).forEach(id=>pendingCreate.delete(id));
+  S.projects.forEach(p=>{if(!incoming[p.id]&&(dirty.has(p.id)||inflight.has(p.id)||pendingCreate.has(p.id)))next.push(p)});
+  const prevServer=serverIds;serverIds=new Set(Object.keys(incoming));
+  if(next.length!==S.projects.length)any=true;
+  S.projects=next.sort((a,b)=>a.id.localeCompare(b.id));
+  if(!snap.metadata.fromCache&&!dirty.size&&!inflight.size)sync('Live · all changes saved');
+  if(!READY){READY=true;render();return}
+  if(!any)return;
+  if(UI.view==='wf'){if(!P(UI.pid)){if(prevServer.has(UI.pid)){toast('This project was deleted by a colleague.');go('dash')}return}
+    if(changedOpen){if(editing())pendingRR=true;else{render();toast('Updated with a colleague’s changes')}}}
+  else if(UI.view!=='set'&&!editing())render();else pendingRR=true}
+function onSettings(snap){if(!snap.exists)return;const d=snap.data();
+  const nextS=Object.assign(clone(DEF),d);if(stable(nextS)===stable(S.settings))return;
+  if(setT)return;S.settings=nextS;if(READY){if(editing())pendingRR=true;else render()}}
+function dbErr(e){sync('Offline — reload to reconnect',false);if(e&&e.code==='revoked'){CAN_WRITE=false;render()}}
+async function saveSettings(){localSave();sync('Saved in this browser')}
+async function newIdea(){
+  if(!CAN_WRITE){toast(NO_DB?'Shared storage isn’t connected in this view.':'You have view-only access.');return}
+  let n=Math.max(0,...S.projects.map(p=>parseInt((p.id.match(/(\d+)$/)||[])[1]||0)))+1;
+  try{for(let i=0;i<5;i++){const sn=await db.doc('projects/HZ-'+pad(n)).get();if(sn.exists&&sn.data()?.idea)n++;else break}}catch(e){}
+  const id='HZ-'+pad(n);
+  const p=shape({id,sample:false,created:today(),createdBy:ME});
+  S.projects.push(p);pendingCreate.add(id);touch(p);
+  go('wf',id,0);setTimeout(()=>document.getElementById('f_idea_title')?.focus(),50)}
+async function delDocs(ids){for(const id of ids){try{await db.doc('projects/'+id).delete()}catch(e){await writeErr(e);return false}}
+  S.projects=S.projects.filter(p=>!ids.includes(p.id));return true}
+
+/* ============================ DIALOGS ============================ */
+function ask(title,text,yes='Delete'){return new Promise(res=>{const m=document.getElementById('modal');
+  document.getElementById('mTitle').textContent=title;document.getElementById('mText').textContent=text;document.getElementById('mYes').textContent=yes;m.hidden=false;
+  const done=v=>{m.hidden=true;res(v)};document.getElementById('mYes').onclick=()=>done(true);document.getElementById('mNo').onclick=()=>done(false);document.getElementById('mNo').focus()})}
+let toastT;function toast(t){const el=document.getElementById('toast');el.textContent=t;el.hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>el.hidden=true,3500)}
+async function save(name,data){if(!dls)return;try{await dls.save({filename:name,data});}catch(e){if(e&&e.code!=='declined')toast('Download failed: '+(e.message||e.code))}}
+
+/* ============================ EVENTS ============================ */
+const dd=document.getElementById('dd');
+document.addEventListener('click',async e=>{
+  const th=e.target.closest('th[data-sortkey]');if(th){setSort(th.dataset.sortkey);return}
+  const t=e.target.closest('button,[data-open],[data-goto],[data-nav],a');
+  if(!e.target.closest('#dataMenu'))dd.hidden=true;
+  if(!t)return;
+  if(t.id==='dataBtn'){dd.hidden=!dd.hidden;return}
+  if(t.dataset.nav){go(t.dataset.nav);return}
+  if(t.dataset.open){e.preventDefault();go('wf',t.dataset.open,t.dataset.step?+t.dataset.step:0);return}
+  if(t.dataset.goto!==undefined&&UI.view==='wf'){const i=+t.dataset.goto;if(i>=0&&i<STEPS.length&&(unlocked(P(UI.pid),i)||t.classList.contains('btn'))){UI.step=i;render();window.scrollTo(0,0)}return}
+  const p=P(UI.pid);
+  if(t.dataset.score&&CAN_WRITE){setPath(p,t.dataset.score,+t.dataset.v);touch(p);t.parentNode.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b===t));refreshSide();return}
+  if(t.dataset.dec&&CAN_WRITE){const g=p.gates[t.dataset.dec];g.decision=g.decision===t.dataset.v?'':t.dataset.v;if(g.decision&&!g.date)g.date=today();touch(p);render();return}
+  const a=t.dataset.act;if(!a)return;dd.hidden=true;
+  if(a==='newIdea'){newIdea();return}
+  if(a==='sortDir'){setSort(UI.sort.key,UI.sort.dir==='asc'?'desc':'asc');return}
+  if(a==='addrow'){getPath(p,t.dataset.arr).push(NEWROW[t.dataset.arr]());touch(p);rerenderBody();return}
+  if(a==='delrow'){getPath(p,t.dataset.arr).splice(+t.dataset.i,1);touch(p);rerenderBody();return}
+  if(a==='delProject'&&p.sourceIdeaId){toast('Linked initiatives cannot be deleted in this prototype; retain the source history.');return}
+  if(a==='delProject'){if(await ask('Delete '+p.id+'?',`“${p.idea.title||'Untitled'}” will be removed from this browser. This can't be undone.`)){if(await delDocs([p.id])){toast('Deleted '+p.id);go('dash')}}return}
+  if(a==='exportJson'){save('horizon-pipeline-'+today()+'.json',JSON.stringify({settings:S.settings,projects:S.projects},null,2));return}
+  if(a==='exportCsv'){exportCsv();return}
+  if(a==='importJson'){document.getElementById('fileIn').click();return}
+  if(a==='clearSamples'){const ids=S.projects.filter(x=>x.sample&&!x.sourceIdeaId).map(x=>x.id);if(!ids.length){toast('There are no sample projects.');return}
+    if(await ask('Remove sample projects?',`${ids.length} sample projects (${ids.join(', ')}) will be removed from this browser.`,'Remove')){if(await delDocs(ids)){toast('Sample projects removed');render()}}return}
+  if(a==='resetAll'&&S.projects.some(p=>p.sourceIdeaId)){toast('Linked initiatives cannot be deleted in this prototype.');return}
+  if(a==='resetAll'){if(await ask('Delete all projects?',`All ${S.projects.length} projects will be removed from this browser. Download a backup first if you need one.`,'Delete all')){if(await delDocs(S.projects.map(x=>x.id))){toast('All projects deleted');go('dash')}}return}
+});
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&(e.target.classList?.contains('step')||e.target.dataset?.sortkey))e.target.click();if(e.key==='Escape'){dd.hidden=true;if(!document.getElementById('modal').hidden)document.getElementById('mNo').click()}});
+function onField(e){const t=e.target;
+  if(t.dataset.flt){UI.f[t.dataset.flt]=t.type==='checkbox'?t.checked:t.value;render();return}
+  if(t.dataset.sortsel){const d=SORTS.find(x=>x[0]===t.value);setSort(t.value,d?d[3]:'asc');return}
+  if(t.dataset.set!==undefined){if(!IS_ADMIN)return;S.settings[t.dataset.set]=num(t.value);saveSettings();return}
+  if(t.dataset.setlist){if(!IS_ADMIN)return;S.settings[t.dataset.setlist]=t.value.split('\n').map(x=>x.trim()).filter(Boolean);saveSettings();return}
+  const p=P(UI.pid);if(!p||!CAN_WRITE)return;
+  const v=t.type==='checkbox'?t.checked:t.type==='number'?(t.value===''?'':num(t.value)):t.value;
+  if(t.dataset.k)setPath(p,t.dataset.k,v);else if(t.dataset.arr)getPath(p,t.dataset.arr)[+t.dataset.i][t.dataset.f]=v;else return;
+  touch(p);updateCalcs();refreshSide()}
+app.addEventListener('input',onField);
+app.addEventListener('focusout',()=>setTimeout(()=>{if(pendingRR&&!editing()){pendingRR=false;render()}},60));
+document.getElementById('fileIn').addEventListener('change',e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();
+  r.onload=async()=>{let d;try{d=JSON.parse(r.result)}catch(err){toast('That file is not a Horizon pipeline backup.');return}
+    const list=(Array.isArray(d)?d:d.projects||[]).filter(x=>x&&x.id&&x.idea);if(!list.length){toast('No projects found in that file.');return}
+    if(!await ask('Import '+list.length+' projects?','Projects with matching IDs will be replaced from this browser. Others are added.','Import'))return;
+    if(list.some(x=>P(x.id)?.sourceIdeaId)){toast('Import stopped: an ID belongs to a linked initiative.');return}
+    for(const x of list){const p=shape(clone(x));p.updatedAt=new Date().toISOString();p.updatedBy=ME;try{await db.doc('projects/'+p.id).set(clone(p))}catch(err){await writeErr(err);return}}
+    toast('Imported '+list.length+' projects');go('dash')};r.readAsText(f);e.target.value=''});
+function exportCsv(){const h=['ID','Title','Function','Pillar','Owner','Sponsor','Stage','Status','Priority','Value','Feasibility','Fit','Risk','Gate0','Gate1','Gate2','Hours','Investment','RunCostYr','BenefitYr','ROI','PaybackMonths','NPV','RealisedLatest','Verdict','UpdatedAt'];
+  const q=v=>{v=String(v??'');return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v};
+  const rows=S.projects.map(p=>{const c=calc(p),r=realised(p);return [p.id,p.idea.title,p.idea.function,p.idea.pillar,p.idea.owner,p.idea.sponsor,stageOf(p),statusOf(p),priority(p),p.idea.value,p.idea.feasibility,p.idea.fit,p.idea.risk,p.gates.g0.decision,p.gates.g1.decision,p.gates.g2.decision,c.hours,Math.round(c.invest),Math.round(c.run),Math.round(c.benefit),c.roi===null?'':c.roi.toFixed(3),c.payback??'',Math.round(c.npv),r?r.v:'',verdict(p)[0],p.updatedAt||'']});
+  save('horizon-register-'+today()+'.csv','﻿'+[h,...rows].map(r=>r.map(q).join(',')).join('\n'))}
+const tip=document.getElementById('tip');
+document.addEventListener('mousemove',e=>{const el=e.target.closest&&e.target.closest('[data-tip]');if(!el||!el.dataset.tip){tip.hidden=true;return}
+  tip.textContent=el.dataset.tip;tip.hidden=false;const w=tip.offsetWidth,h=tip.offsetHeight;
+  let x=e.clientX+14,y=e.clientY+14;if(x+w>innerWidth-8)x=e.clientX-w-14;if(y+h>innerHeight-8)y=e.clientY-h-14;tip.style.left=x+'px';tip.style.top=y+'px'});
+
+/* ============================ LOCAL PROTOTYPE STORAGE ============================ */
+const LOCAL_KEY='bp-horizon-pipeline-v1';
+function localSave(){try{localStorage.setItem(LOCAL_KEY,JSON.stringify(S));return true}catch(e){sync('Could not save locally',false);toast('Unable to save in this browser.');return false}}
+try{const existing=JSON.parse(localStorage.getItem(LOCAL_KEY)||'null');if(existing){S.settings=Object.assign(clone(DEF),existing.settings||{});S.projects=Array.isArray(existing.projects)?existing.projects.map(shape):[]}}catch(e){sync('Could not read local data',false)}
+ME='Local user';CAN_WRITE=true;IS_ADMIN=true;READY=true;
+db={doc(path){const id=path.split('/')[1];return {async get(){return {exists:!!P(id),data:()=>P(id)}},async set(v){if(path==='config/settings'){S.settings=v}else{const i=S.projects.findIndex(p=>p.id===id);if(i<0)S.projects.push(v);else S.projects[i]=v}if(!localSave())throw Error('local save failed')},async delete(){S.projects=S.projects.filter(p=>p.id!==id);if(!localSave())throw Error('local save failed')}}}};
+dls={async save({filename,data}){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([data],{type:'application/octet-stream'}));a.download=filename;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}};
+sync('Saved in this browser');const selected=new URLSearchParams(location.search).get('initiative');if(selected&&P(selected)){UI.view='wf';UI.pid=selected;UI.step=0}render();
+window.addEventListener('storage',e=>{if(e.key===LOCAL_KEY&&!editing()){try{const v=JSON.parse(e.newValue||'null');if(v){S.settings=Object.assign(clone(DEF),v.settings||{});S.projects=(v.projects||[]).map(shape);render()}}catch(err){}}});
+</script>
+
+</body></html>
